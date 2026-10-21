@@ -1,0 +1,6 @@
+{
+  "name": "InstaFlow - Baixador de Vídeos do Instagram",
+  "description": "Ferramenta ultra rápida e prática para baixar Reels, vídeos, Stories e carrosséis do Instagram em alta definição (MP4) e áudio em 1 clique.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
