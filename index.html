@@ -8,10 +8,49 @@
     <meta property="og:title" content="PixelShift - Conversor de Imagens Grátis (PNG, JPG, WEBP, GIF)" />
     <meta property="og:description" content="Converta e comprima imagens em lote direto no navegador. 100% gratuito, sem limites e privado — suas fotos nunca saem do seu dispositivo." />
     <meta property="og:type" content="website" />
+    <meta name="robots" content="index, follow" />
+    <meta name="keywords" content="conversor de imagens, converter png para jpg, converter jpg para webp, comprimir imagens online, converter gif em png, conversor de imagem gratis" />
+    <meta property="og:site_name" content="PixelShift" />
+    <meta property="og:locale" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PixelShift - Conversor de Imagens Grátis" />
+    <meta name="twitter:description" content="Converta e comprima imagens em lote direto no navegador. 100% gratuito e privado." />
+
+    <!-- Schema.org Structured Data (JSON-LD) para indexação rica no Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PixelShift",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires HTML5 Canvas support",
+      "description": "Conversor e otimizador universal de imagens em lote. Suporte para PNG, JPG, WEBP, GIF e BMP com processamento local no navegador.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BRL"
+      },
+      "featureList": [
+        "Conversão em lote de imagens",
+        "Processamento 100% local com privacidade total",
+        "Compressão inteligente para WEBP",
+        "Empacotamento e download em arquivo ZIP",
+        "Suporte a transparência com cor de fundo customizável"
+      ]
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+      // Garante carregamento correto de assets relativos no GitHub Pages (evita tela branca)
+      if (window.location.hostname.includes('github.io')) {
+        var p = window.location.pathname;
+        if (p.length > 1 && !p.endsWith('/') && !p.includes('.')) {
+          window.location.replace(window.location.origin + p + '/' + window.location.search + window.location.hash);
+        }
+      }
+    </script>
   </head>
   <body class="bg-[#0B0F19] text-slate-100 antialiased selection:bg-indigo-500/30 selection:text-white">
     <div id="root"></div>
