@@ -1,224 +1,364 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import {
+  GlobalConversionConfig,
+  ImageFileItem,
+  FORMAT_OPTIONS,
+  SupportedOutputFormat,
+} from './types/converter.ts';
+import {
+  processInputFile,
+  convertSingleImage,
+  createZipArchive,
+  triggerFileDownload,
+  formatFileSize,
+} from './services/imageConverter.ts';
 import { Navbar } from './components/Navbar.tsx';
-import { UrlInputBar } from './components/UrlInputBar.tsx';
-import { MediaPreviewCard } from './components/MediaPreviewCard.tsx';
-import { HistoryDrawer } from './components/HistoryDrawer.tsx';
-import { HowItWorks } from './components/HowItWorks.tsx';
+import { DropZone } from './components/DropZone.tsx';
+import { BatchControlsBar } from './components/BatchControlsBar.tsx';
+import { ImageItemCard } from './components/ImageItemCard.tsx';
+import { ComparisonModal } from './components/ComparisonModal.tsx';
+import { FeaturesGrid } from './components/FeaturesGrid.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { Footer } from './components/Footer.tsx';
-import { extractInstagramMedia, fetchPresets, PresetSummary } from './services/api.ts';
-import { getHistory, saveHistoryItem, removeHistoryItem, clearHistory } from './services/history.ts';
-import { InstagramPostData, DownloadHistoryItem } from './types/instagram.ts';
-import { Sparkles, Shield, Zap, Info } from 'lucide-react';
+import {
+  Sparkles,
+  Zap,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Layers,
+  Check,
+} from 'lucide-react';
 
 export default function App() {
-  const [url, setUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [postData, setPostData] = useState<InstagramPostData | null>(null);
-  const [presets, setPresets] = useState<PresetSummary[]>([]);
-  const [history, setHistory] = useState<DownloadHistoryItem[]>([]);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [infoNotice, setInfoNotice] = useState<string | null>(null);
+  const [items, setItems] = useState<ImageFileItem[]>([]);
+  const [isConvertingAll, setIsConvertingAll] = useState(false);
+  const [isLoadingSample, setIsLoadingSample] = useState(false);
+  const [comparisonItem, setComparisonItem] = useState<ImageFileItem | null>(null);
 
-  const heroInputRef = useRef<HTMLDivElement>(null);
+  const [globalConfig, setGlobalConfig] = useState<GlobalConversionConfig>({
+    targetFormat: 'webp',
+    quality: 0.85,
+    scalePercentage: 100,
+    backgroundColor: '#FFFFFF',
+  });
 
-  // Carrega histórico e presets na inicialização
-  useEffect(() => {
-    setHistory(getHistory());
-    fetchPresets().then((data) => {
-      if (data && data.length > 0) {
-        setPresets(data);
-      }
-    });
-  }, []);
+  const converterSectionRef = useRef<HTMLDivElement>(null);
 
-  // Processa extração de link
-  const handleExtract = async (targetUrl?: string) => {
-    const link = (targetUrl || url).trim();
-    if (!link) {
-      setError('Por favor, insira ou cole um link do Instagram.');
-      return;
+  // Adiciona arquivos à fila
+  const handleFilesSelected = async (files: File[]) => {
+    const newItems: ImageFileItem[] = [];
+    for (const file of files) {
+      const item = await processInputFile(file);
+      // Herda as configurações globais atuais
+      item.targetFormat = globalConfig.targetFormat;
+      item.quality = globalConfig.quality;
+      item.scalePercentage = globalConfig.scalePercentage;
+      item.backgroundColor = globalConfig.backgroundColor;
+      newItems.push(item);
     }
 
-    setIsLoading(true);
-    setError(null);
-    setInfoNotice(null);
+    setItems((prev) => [...prev, ...newItems]);
 
-    const result = await extractInstagramMedia(link);
-    setIsLoading(false);
+    // Rola suavemente até os arquivos
+    setTimeout(() => {
+      converterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
-    if (result.success && result.data) {
-      setPostData(result.data);
-      if (result.fallbackReason) {
-        setInfoNotice(result.fallbackReason);
-      }
-      // Rola suavemente até o preview
-      setTimeout(() => {
-        window.scrollTo({
-          top: 360,
-          behavior: 'smooth',
+  // Atualiza um item específico
+  const handleUpdateItem = (id: string, updates: Partial<ImageFileItem>) => {
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
+    );
+  };
+
+  // Converte um único item
+  const handleConvertSingle = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    handleUpdateItem(id, { status: 'converting', error: undefined });
+
+    try {
+      const result = await convertSingleImage(item);
+      handleUpdateItem(id, result);
+    } catch (err: any) {
+      handleUpdateItem(id, {
+        status: 'error',
+        error: err?.message || 'Falha ao converter imagem',
+      });
+    }
+  };
+
+  // Converte todas as imagens da fila
+  const handleConvertAll = async () => {
+    if (items.length === 0 || isConvertingAll) return;
+
+    setIsConvertingAll(true);
+
+    for (const item of items) {
+      handleUpdateItem(item.id, { status: 'converting', error: undefined });
+      try {
+        const result = await convertSingleImage(item);
+        handleUpdateItem(item.id, result);
+      } catch (err: any) {
+        handleUpdateItem(item.id, {
+          status: 'error',
+          error: err?.message || 'Falha na conversão',
         });
-      }, 100);
-    } else {
-      setError(result.error || 'Não foi possível extrair este vídeo. Verifique se o perfil é público.');
+      }
+    }
+
+    setIsConvertingAll(false);
+  };
+
+  // Atualiza a configuração global e sincroniza nos itens que ainda não foram convertidos
+  const handleConfigChange = (newConfig: Partial<GlobalConversionConfig>) => {
+    const updated = { ...globalConfig, ...newConfig };
+    setGlobalConfig(updated);
+
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.status === 'idle') {
+          return {
+            ...item,
+            ...(newConfig.targetFormat ? { targetFormat: newConfig.targetFormat } : {}),
+            ...(newConfig.quality !== undefined ? { quality: newConfig.quality } : {}),
+            ...(newConfig.scalePercentage !== undefined ? { scalePercentage: newConfig.scalePercentage } : {}),
+            ...(newConfig.backgroundColor ? { backgroundColor: newConfig.backgroundColor } : {}),
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Remove um item da fila
+  const handleRemoveItem = (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (item?.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    if (item?.convertedUrl) URL.revokeObjectURL(item.convertedUrl);
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  // Limpa toda a fila
+  const handleClearAll = () => {
+    items.forEach((item) => {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      if (item.convertedUrl) URL.revokeObjectURL(item.convertedUrl);
+    });
+    setItems([]);
+  };
+
+  // Baixa todas as imagens convertidas em um único ZIP
+  const handleDownloadAllZip = async () => {
+    const convertedItems = items.filter((i) => i.status === 'done' && i.convertedBlob);
+    if (convertedItems.length === 0) return;
+
+    try {
+      const zipBlob = await createZipArchive(convertedItems);
+      triggerFileDownload(zipBlob, `pixelshift_imagens_${Date.now()}.zip`);
+    } catch (err: any) {
+      console.error('Erro ao gerar arquivo ZIP:', err);
     }
   };
 
-  // Seleciona um preset de teste
-  const handleSelectPreset = (presetKey: string) => {
-    const found = presets.find((p) => p.key === presetKey);
-    if (found) {
-      setUrl(found.url);
-      handleExtract(found.url);
-    } else {
-      setUrl(presetKey);
-      handleExtract(presetKey);
-    }
-  };
-
-  // Quando o usuário realiza um download
-  const handleDownloaded = (format: 'mp4' | 'mp3' | 'jpg') => {
-    if (!postData) return;
-    const updated = saveHistoryItem(postData, format);
-    setHistory(updated);
-  };
-
-  // Manipulação de histórico
-  const handleRemoveHistoryItem = (id: string) => {
-    const updated = removeHistoryItem(id);
-    setHistory(updated);
-  };
-
-  const handleClearHistory = () => {
-    clearHistory();
-    setHistory([]);
-  };
-
-  const handleFocusHeroInput = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const completedCount = items.filter((i) => i.status === 'done').length;
 
   return (
-    <div className="min-h-screen bg-[#07080C] text-slate-100 flex flex-col font-sans">
-      {/* Barra de Navegação */}
+    <div className="min-h-screen bg-[#0B0F19] text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-white">
+      {/* Barra de Navegação Conforme Top Bar Contract */}
       <Navbar
-        onOpenHistory={() => setIsHistoryOpen(true)}
-        historyCount={history.length}
-        onFocusInput={handleFocusHeroInput}
+        totalItems={items.length}
+        onClearAll={handleClearAll}
+        onScrollToConverter={() =>
+          converterSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }
       />
 
-      {/* Conteúdo Principal */}
       <main className="flex-1">
-        {/* Seção Hero com Foco em Praticidade */}
-        <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24">
-          {/* Halos de iluminação de fundo no estilo Instagram */}
-          <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -z-10 h-[500px] w-full max-w-5xl">
-            <div className="absolute top-[-100px] left-1/4 h-72 w-72 rounded-full bg-[#833AB4]/20 blur-[120px]" />
-            <div className="absolute top-[-80px] right-1/4 h-72 w-72 rounded-full bg-[#FD1D1D]/20 blur-[130px]" />
-            <div className="absolute top-[80px] left-1/3 h-64 w-64 rounded-full bg-[#F77737]/15 blur-[110px]" />
-          </div>
+        {/* Seção Hero: Apresentação com Alta Clareza e Sem Slop */}
+        <section className="relative overflow-hidden pt-12 pb-8 sm:pt-16 sm:pb-12 border-b border-white/5">
+          {/* Efeito sutil de iluminação de fundo */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[360px] bg-gradient-to-b from-indigo-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none" />
 
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center" ref={heroInputRef}>
-            {/* Tag Kicker sutil sem pílula estática */}
-            <div className="flex items-center justify-center gap-2 text-xs font-semibold tracking-wider uppercase text-slate-400 mb-4">
-              <span className="flex h-2 w-2 rounded-full bg-gradient-to-r from-[#833AB4] to-[#FD1D1D]" />
-              <span>Baixador Oficial de Alta Velocidade</span>
-              <span aria-hidden="true">·</span>
-              <span className="text-[#F77737]">HD 1080p & MP3</span>
+          <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+            {/* Tag de Destaque Unboxed sem pílula estática */}
+            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-400 mb-4">
+              <ShieldCheck className="h-4 w-4" />
+              <span>Processamento 100% no seu navegador · Suas fotos nunca saem do seu dispositivo</span>
             </div>
 
-            {/* Título Principal de Alto Impacto */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-              Baixe Vídeos do Instagram{' '}
-              <span className="bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] bg-clip-text text-transparent">
-                em 1 Clique
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display text-balance">
+              Converta e comprima imagens em lote{' '}
+              <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-300 bg-clip-text text-transparent">
+                com velocidade máxima
               </span>
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base lg:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Cole o link de qualquer Reel, vídeo de publicação, Story ou carrossel. Sem anúncios intrusivos, sem redirecionamentos e direto no seu dispositivo.
+            <p className="mt-4 sm:mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto text-balance leading-relaxed">
+              Transforme PNG, JPG, WEBP, GIF, BMP e SVG com fidelidade milimétrica. Reduza até 80% do peso para web sem perda visual perceptível.
             </p>
 
-            {/* Barra de Entrada com Clipboard */}
-            <div className="mt-8 sm:mt-10 max-w-3xl mx-auto">
-              <UrlInputBar
-                url={url}
-                setUrl={setUrl}
-                onSubmit={handleExtract}
-                isLoading={isLoading}
-                error={error}
-                presets={presets}
-                onSelectPreset={handleSelectPreset}
-              />
-            </div>
-
-            {/* Micro Vantagens sem poluição */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
-              <div className="flex items-center gap-2">
-                <Zap className="h-3.5 w-3.5 text-[#F77737]" />
-                <span>Download Instantâneo sem Espera</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="h-3.5 w-3.5 text-emerald-400" />
-                <span>100% Gratuito & Seguro</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-[#FD1D1D]" />
-                <span>Qualidade Original HD Preservada</span>
-              </div>
+            {/* Atalhos Rápidos de Conversão em 1 Clique */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-xs text-slate-400 mr-1">Atalhos rápidos:</span>
+              <button
+                type="button"
+                onClick={() => handleConfigChange({ targetFormat: 'webp', quality: 0.85 })}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  globalConfig.targetFormat === 'webp'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Qualquer → WEBP (Economia Máxima)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfigChange({ targetFormat: 'jpeg', quality: 0.9 })}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  globalConfig.targetFormat === 'jpeg'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                PNG → JPG (Compatibilidade)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfigChange({ targetFormat: 'png' })}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  globalConfig.targetFormat === 'png'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                JPG → PNG (Fidelidade Sem Perdas)
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Notificação informativa caso aplicável */}
-        {infoNotice && (
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 mb-6">
-            <div className="flex items-start gap-3 rounded-xl border border-blue-500/30 bg-blue-950/20 p-3.5 text-xs text-blue-200">
-              <Info className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <span>{infoNotice}</span>
+        {/* Área Central de Conversão */}
+        <section ref={converterSectionRef} className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          {/* Caixa de Arraste / DropZone */}
+          <DropZone
+            onFilesSelected={handleFilesSelected}
+            isLoadingSample={isLoadingSample}
+            setIsLoadingSample={setIsLoadingSample}
+          />
+
+          {/* Quando houver imagens carregadas: Barra de Controle Global + Lista de Itens */}
+          {items.length > 0 && (
+            <div className="mt-8 space-y-6">
+              {/* Barra de Configurações em Lote */}
+              <BatchControlsBar
+                config={globalConfig}
+                onChangeConfig={handleConfigChange}
+                onConvertAll={handleConvertAll}
+                onDownloadAllZip={handleDownloadAllZip}
+                isConverting={isConvertingAll}
+                totalCount={items.length}
+                completedCount={completedCount}
+              />
+
+              {/* Lista de Imagens na Fila */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <h3 className="text-sm font-bold text-white font-display flex items-center gap-2">
+                    <Layers className="h-4 w-4 text-indigo-400" />
+                    <span>Fila de Imagens ({items.length})</span>
+                  </h3>
+
+                  <span className="text-xs text-slate-400 font-mono tabular-nums">
+                    Tamanho original total:{' '}
+                    {formatFileSize(items.reduce((acc, i) => acc + i.originalSize, 0))}
+                  </span>
+                </div>
+
+                {items.map((item) => (
+                  <ImageItemCard
+                    key={item.id}
+                    item={item}
+                    onUpdateItem={handleUpdateItem}
+                    onConvertSingle={handleConvertSingle}
+                    onRemove={handleRemoveItem}
+                    onOpenComparison={setComparisonItem}
+                  />
+                ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </section>
 
-        {/* Área do Card de Pré-visualização e Download */}
-        {postData && (
-          <section className="pb-16">
-            <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-              <MediaPreviewCard
-                post={postData}
-                onDownloaded={handleDownloaded}
-              />
+        {/* Tabela Comparativa de Formatos (#formatos) */}
+        <section id="formatos" className="w-full py-12 border-t border-white/5 bg-[#090D16]">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display">
+                Guia de Formatos de Imagem
+              </h2>
+              <p className="mt-3 text-sm text-slate-400">
+                Entenda qual formato escolher para cada finalidade e economize armazenamento.
+              </p>
             </div>
-          </section>
-        )}
 
-        {/* Guia de Uso e Formatos */}
-        <HowItWorks />
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {(Object.keys(FORMAT_OPTIONS) as SupportedOutputFormat[]).map((fmt) => {
+                const opt = FORMAT_OPTIONS[fmt];
+                return (
+                  <div
+                    key={fmt}
+                    className="rounded-xl border border-white/10 bg-[#111625] p-5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-lg font-bold text-white font-display">
+                          {opt.label}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {opt.extension}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        {opt.description}
+                      </p>
+                    </div>
 
-        {/* Seção FAQ */}
+                    <div className="mt-4 pt-3 border-t border-white/5 text-[11px] text-slate-400 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span>Transparência:</span>
+                        <span className={opt.supportsTransparency ? 'text-emerald-400 font-semibold' : 'text-slate-500'}>
+                          {opt.supportsTransparency ? 'Suportada' : 'Não'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Ajuste de Qualidade:</span>
+                        <span className={opt.supportsQuality ? 'text-indigo-400 font-semibold' : 'text-slate-500'}>
+                          {opt.supportsQuality ? '10% a 100%' : 'Sem perda'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Pilares de Benefícios */}
+        <FeaturesGrid />
+
+        {/* Seção de Perguntas Frequentes */}
         <FaqSection />
       </main>
 
-      {/* Gaveta de Histórico Lateral */}
-      <HistoryDrawer
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
-        history={history}
-        onSelectPost={(post) => {
-          setPostData(post);
-          setUrl(post.originalUrl);
-          window.scrollTo({ top: 360, behavior: 'smooth' });
-        }}
-        onRemoveItem={handleRemoveHistoryItem}
-        onClearHistory={handleClearHistory}
+      {/* Modal Interativo de Comparação Antes/Depois */}
+      <ComparisonModal
+        item={comparisonItem}
+        onClose={() => setComparisonItem(null)}
       />
 
       {/* Rodapé */}

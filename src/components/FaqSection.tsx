@@ -6,84 +6,72 @@ interface FaqItem {
   answer: string;
 }
 
-const FAQ_DATA: FaqItem[] = [
-  {
-    question: 'Como salvar os vídeos do Instagram na galeria do iPhone ou iPad?',
-    answer:
-      'No Safari do iOS, basta colar o link no InstaFlow e tocar no botão "Baixar Vídeo (MP4 HD)". O Safari exibirá uma confirmação de download. Após a conclusão, abra o arquivo na pasta de Downloads do aplicativo Arquivos (Files), toque no botão de compartilhar no canto inferior e selecione "Salvar Vídeo" para enviá-lo diretamente ao rolo de câmera.',
-  },
-  {
-    question: 'Onde os arquivos ficam salvos em celulares Android?',
-    answer:
-      'Em smartphones Android (Chrome, Samsung Internet, Edge), os vídeos baixados através do InstaFlow são salvos automaticamente na pasta padrão "Downloads" do seu dispositivo e já aparecem na sua Galeria ou Google Fotos em poucos segundos.',
-  },
-  {
-    question: 'Posso baixar apenas o áudio de uma música ou áudio original?',
-    answer:
-      'Sim! Sempre que o InstaFlow detecta uma faixa de áudio em um Reel ou publicação de vídeo, o botão "Áudio (MP3)" fica disponível. Ao clicar, você baixa a faixa de áudio pronta para usar como ringtone, alarme ou em suas próprias edições.',
-  },
-  {
-    question: 'É possível baixar publicações de contas ou perfis privados?',
-    answer:
-      'Por motivos de privacidade e conformidade com as diretrizes do Instagram, o InstaFlow processa publicações de contas e perfis públicos. Para baixar de um perfil privado, a conta precisaria estar aberta ou com compartilhamento público autorizado.',
-  },
-  {
-    question: 'O InstaFlow impõe algum limite diário ou exige cadastro?',
-    answer:
-      'Não. O InstaFlow é 100% gratuito, sem limite de downloads por dia e não exige nenhum tipo de cadastro, criação de conta ou inserção de dados pessoais. Tudo funciona com foco absoluto em praticidade.',
-  },
-];
-
 export const FaqSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const toggleIndex = (idx: number) => {
-    setOpenIndex(openIndex === idx ? null : idx);
-  };
+  const faqs: FaqItem[] = [
+    {
+      question: 'As minhas imagens são enviadas para algum servidor?',
+      answer:
+        'Não! 100% da conversão acontece no seu próprio navegador através das APIs nativas de Canvas do HTML5. As imagens ficam estritamente na memória temporária do seu aparelho e nunca trafegam pela internet.',
+    },
+    {
+      question: 'Qual é a melhor escolha entre PNG, JPG e WEBP?',
+      answer:
+        'WEBP é o formato moderno mais recomendado para internet: reduz até 80% do peso do arquivo com qualidade idêntica ao JPG e suporte a transparência igual ao PNG. Use JPG se você precisar de compatibilidade com programas antigos de impressão e PNG quando precisar de fidelidade gráfica absoluta sem perdas.',
+    },
+    {
+      question: 'O que acontece com o fundo transparente de um PNG ao converter para JPG?',
+      answer:
+        'Como o formato JPG não suporta transparência (canal alfa), o PixelShift permite que você escolha a cor de preenchimento (por padrão, um fundo branco limpo ou preto). Assim sua imagem nunca fica com artefatos pretos feios.',
+    },
+    {
+      question: 'Existe limite na quantidade de imagens ou tamanho?',
+      answer:
+        'Não há limite imposto pelo PixelShift! Você pode converter dezenas de imagens em lote. Como o processamento usa a memória RAM do seu próprio aparelho, arquivos de 20MB, 50MB ou mais são convertidos com total fluidez.',
+    },
+    {
+      question: 'Preciso cadastrar cartão de crédito ou criar conta?',
+      answer:
+        'Absolutamente nada. O PixelShift é 100% gratuito, sem planos pagos, sem necessidade de login, sem chaves de API e sem período de testes. Você abre e usa livremente.',
+    },
+  ];
 
   return (
-    <section id="faq" className="w-full py-16 border-t border-white/5">
+    <section id="faq" className="w-full py-12 border-t border-white/5">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#FD1D1D] font-mono">
-            Tire Suas Dúvidas
-          </span>
-          <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display">
             Perguntas Frequentes
           </h2>
           <p className="mt-3 text-sm text-slate-400">
-            Respostas diretas para as dúvidas mais comuns sobre o download de mídias.
+            Tudo o que você precisa saber sobre como funciona a conversão local.
           </p>
         </div>
 
-        <div className="mt-10 space-y-3">
-          {FAQ_DATA.map((item, idx) => {
-            const isOpen = openIndex === idx;
+        <div className="space-y-3">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
             return (
               <div
-                key={idx}
-                className="overflow-hidden rounded-xl border border-white/5 bg-[#0E1018] transition-all hover:border-white/15"
+                key={faq.question}
+                className="overflow-hidden rounded-xl border border-white/10 bg-[#111625] transition-colors"
               >
                 <button
                   type="button"
-                  onClick={() => toggleIndex(idx)}
-                  className="flex w-full items-center justify-between p-5 text-left transition-colors"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="flex w-full items-center justify-between p-4 sm:p-5 text-left text-sm sm:text-base font-semibold text-white hover:text-indigo-300 transition-colors"
                 >
-                  <span className="font-semibold text-white text-sm sm:text-base pr-4">
-                    {item.question}
-                  </span>
-                  <div
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/5 text-slate-400 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-white bg-white/10' : ''
+                  <span>{faq.question}</span>
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 text-indigo-400' : ''
                     }`}
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                  </div>
+                  />
                 </button>
-
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-sm text-slate-300 leading-relaxed border-t border-white/5">
-                    {item.answer}
+                  <div className="px-4 pb-5 sm:px-5 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-3">
+                    {faq.answer}
                   </div>
                 )}
               </div>
