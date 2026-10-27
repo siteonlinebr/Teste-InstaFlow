@@ -25,6 +25,12 @@ async function startServer() {
     });
   });
 
+  // Servir arquivos estáticos da pasta public (favicon, robots, sitemap)
+  const publicPath = path.resolve(__dirname, 'public');
+  if (fs.existsSync(publicPath)) {
+    app.use(express.static(publicPath));
+  }
+
   // Configuração do ambiente Vite / Produção
   const isProd = process.env.NODE_ENV === 'production';
   const distPath = path.resolve(__dirname, 'dist');
