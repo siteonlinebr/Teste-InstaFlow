@@ -1,71 +1,79 @@
-# Política de Privacidade & Termos de Uso (Padrão FHG)
+# Sistema de Micro-Feedback Inteligente (Google Analytics + E-mail Opcional)
 
-Implementação de um modal interativo e responsivo de **Política de Privacidade** e **Termos de Uso**, adaptando a estrutura oficial do ecossistema *Curiosidades Incríveis* para o *PixelShift* e o *Future Horizon Group (FHG)*, garantindo conformidade com a LGPD e preparando o site para aprovação no Google AdSense.
-
-## Decisões Confirmadas pelo Usuário
-
-> [!IMPORTANT]
-> - **Formato de Exibição**: Modal interativo de abertura instantânea na própria página, mantendo o usuário imerso sem recarregamentos ou redirecionamentos.
-> - **Padrão de Conteúdo**: Adaptação direta da política de privacidade do *Curiosidades Incríveis*, customizada com as características técnicas do *PixelShift* (processamento 100% local no navegador) e chancela do *Future Horizon Group (FHG)*.
+Implementação de um componente elegante de micro-avaliação pós-download de 1 clique, integrado diretamente aos eventos em tempo real do **Google Analytics 4 (GA4)** e com canal direto para envio de sugestões ao e-mail oficial **`contatocuriosidadesincriveis6@gmail.com`**.
 
 ---
 
-## 1. Visão Geral e Estrutura dos Termos
+## 🎯 Objetivos & Decisões Confirmadas
 
-O modal exibirá duas abas/seções claras para os visitantes e auditores do Google AdSense:
+> [!IMPORTANT]
+> - **Experiência do Usuário (1 Clique)**: O card de avaliação surge suavemente logo após o usuário baixar suas imagens convertidas (individualmente ou em pacote ZIP).
+> - **Rastreamento em Tempo Real no Google Analytics (GA4)**: Cada voto dispara um evento nativo `user_feedback` com métricas detalhadas (nota, formato convertido, sentimento e contagem de itens).
+> - **Canal de E-mail para Sugestões (Opcional)**: Se o usuário quiser elogiar ou pedir uma funcionalidade (ex: conversão de vídeos, novos formatos), ele pode enviar uma mensagem em 1 clique direto para o e-mail oficial do grupo.
+> - **Sem Custo de Servidor**: Funciona 100% no navegador (Client-Side), sem banco de dados pago ou backend adicional.
+
+---
+
+## 📐 Design & Experiência de Uso (UX)
+
+### 1. Gatilho de Exibição
+O card surge com uma animação suave (`animate-fadeIn`) logo abaixo da barra de controle ou no rodapé do item convertido assim que o download é disparado:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│  🔒 Privacidade & Termos · Future Horizon Group (FHG)              [✕] │
-├────────────────────────────────────────────────────────────────────────┤
-│  [ Aba: Política de Privacidade ]     [ Aba: Termos de Uso ]           │
+│  🎉 Download concluído! Como foi sua experiência com a conversão?      │
 │                                                                        │
-│  • Zero Venda de Dados: Privacidade inegociável                        │
-│  • Processamento 100% Local: Fotos nunca saem do dispositivo          │
-│  • Google Analytics (G-HZNZ6824F7): Métricas agregadas e anônimas      │
-│  • Cookies Técnicos: Armazenamento exclusivo de preferências locais    │
-│  • Conformidade LGPD & GDPR: Direitos de titular resguardados          │
-│  • Ecossistema FHG: Governança pelo Future Horizon Group              │
-│  • Contato Oficial: zeusagar.2018@gmail.com                            │
+│  [ 😍 Excelente! ]   [ ⚡ Super Rápido! ]   [ 👍 Boa ]   [ 😕 Teve problema ] │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 2. Experiência do Usuário e Design Visual
-
-- **Estética & Atmosfera**:
-  - Backdrop em *glassmorphism* com desfoque de fundo (`backdrop-blur-md bg-black/80`).
-  - Cartão central em `#0F1422` com bordas sutis em `border-white/10` e sombra profunda `shadow-2xl`.
-  - Tipografia de alta legibilidade (`DM Sans` e `Plus Jakarta Sans`) com espaçamento confortável para leitura no mobile e desktop.
-- **Interatividade & Acessibilidade**:
-  - Fechamento intuitivo com tecla `Esc`, botão `✕` no topo ou clique fora do modal.
-  - Gatilhos de abertura integrados discretamente no rodapé (`Footer`) com links "Política de Privacidade" e "Termos de Uso".
-  - Scroll interno suave com barra de rolagem estilizada (`scrollbar-thin`).
-
----
-
-## 3. Decisões Técnicas e Conformidade
-
-- **Componente Dedicado (`src/components/PrivacyPolicyModal.tsx`)**:
-  - Isolamento completo da lógica de exibição em componente React controlado por estado.
-- **Conformidade para Google AdSense e LGPD**:
-  - Presença explícita da menção ao rastreamento anônimo do Google Analytics (`G-HZNZ6824F7`), conformidade com a LGPD e dados do operador (*Future Horizon Group*).
-- **Zero Impacto no Desempenho**:
-  - Renderização condicional para não sobrecarregar a árvore do DOM quando o modal estiver fechado.
-- **Sincronização com o Build**:
-  - Atualização do pipeline de compilação em `dist/`, `docs/` e `index.html`.
+### 2. Estado Após o 1º Clique (Registro Imediato no Google Analytics)
+Assim que o visitante clica em qualquer uma das opções:
+1. O evento é enviado instantaneamente para o **Google Analytics 4**:
+   - `event_name`: `user_feedback`
+   - `sentiment`: `'excelente'` | `'rapido'` | `'boa'` | `'problema'`
+   - `format`: formato utilizado (ex: `'webp'`, `'pdf'`, etc.)
+   - `timestamp`: data e hora do evento.
+2. A tela muda para agradecimento com espaço opcional para mensagem:
+   ```
+   ┌────────────────────────────────────────────────────────────────────┐
+   │  ✓ Muito obrigado pelo feedback! Cada voto ajuda o ecossistema FHG. │
+   │                                                                    │
+   │  Quer deixar uma sugestão para os próximos recursos? (Opcional)    │
+   │  [ Escreva uma mensagem rápida...                                ] │
+   │  [ Enviar Mensagem por E-mail ✉️ ]              [ Concluir ✕ ]     │
+   └────────────────────────────────────────────────────────────────────┘
+   ```
 
 ---
 
-## 4. Etapas de Execução
+## 🛠️ Arquitetura Técnica
 
-1. **Criação do Componente `PrivacyPolicyModal.tsx`**:
-   - Desenvolver o modal com abas alternáveis (Privacidade / Termos de Uso).
-   - Inserir o texto padronizado com os dados específicos do PixelShift e FHG.
-2. **Integração no `App.tsx` e `Footer.tsx`**:
-   - Adicionar estado global `isPrivacyOpen` e `initialTab` no `App.tsx`.
-   - Adicionar links clicáveis no `Footer.tsx` para abrir o modal diretamente na aba solicitada.
-3. **Validação, Compilação e Sincronização**:
-   - Testar abertura, leitura e fechamento em celulares e desktops.
-   - Executar `npm run build` e sincronizar pastas `dist/` e `docs/`.
+### 1. Novo Componente React: `src/components/FeedbackBanner.tsx`
+- Estado local controlado (`rating`, `submitted`, `isExpanded`).
+- Prevenção de spam: armazena no `localStorage` para não ficar incomodando o mesmo usuário a cada download consecutivo.
+- Botão de fechar `✕` discreto a qualquer momento.
+
+### 2. Integração com o Google Analytics 4 (GA4)
+- Função utilitária no serviço: `trackFeedbackEvent(sentiment, format, count)`.
+- Compatibilidade segura com `window.gtag` (testando existência antes da chamada).
+
+### 3. Integração de E-mail
+- Abertura de mensagem ou envio para `contatocuriosidadesincriveis6@gmail.com` com título pré-configurado: `[PixelShift Feedback] Sugestão / Avaliação de Usuário`.
+
+### 4. Conexão nos Gatilhos de Download
+- Acionado no clique de:
+  - Botão individual "Baixar Imagem".
+  - Botão global "Baixar Todas (.ZIP)".
+
+---
+
+## 🚀 Etapas de Implementação
+
+1. **Criar `src/components/FeedbackBanner.tsx`**:
+   - Interface moderna com glassmorphism, botões interativos e feedback tátil.
+2. **Conectar Gatilhos no `App.tsx` e `imageConverter.ts`**:
+   - Disparar a exibição do banner quando o download for efetuado com sucesso.
+3. **Verificação & Compilação**:
+   - Testar o envio de eventos no GA4.
+   - Executar `npm run build` e sincronizar `dist/` e `docs/` para o GitHub Pages.

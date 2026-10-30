@@ -19,6 +19,7 @@ import { ImageItemCard } from './components/ImageItemCard.tsx';
 import { ComparisonModal } from './components/ComparisonModal.tsx';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal.tsx';
 import { OverallStatus } from './components/OverallStatus.tsx';
+import { FeedbackBanner } from './components/FeedbackBanner.tsx';
 import { FeaturesGrid } from './components/FeaturesGrid.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { Footer } from './components/Footer.tsx';
@@ -38,6 +39,7 @@ export default function App() {
   const [isLoadingSample, setIsLoadingSample] = useState(false);
   const [comparisonItem, setComparisonItem] = useState<ImageFileItem | null>(null);
   const [privacyModalTab, setPrivacyModalTab] = useState<'privacy' | 'terms' | null>(null);
+  const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
 
   const [globalConfig, setGlobalConfig] = useState<GlobalConversionConfig>({
     targetFormat: 'webp',
@@ -162,6 +164,7 @@ export default function App() {
     try {
       const zipBlob = await createZipArchive(convertedItems);
       triggerFileDownload(zipBlob, `pixelshift_imagens_${Date.now()}.zip`);
+      setShowFeedbackBanner(true);
     } catch (err: any) {
       console.error('Erro ao gerar arquivo ZIP:', err);
     }
@@ -300,6 +303,14 @@ export default function App() {
                 completedCount={completedCount}
               />
 
+              {/* Banner de Avaliação Pós-Download (GA4 + E-mail) */}
+              <FeedbackBanner
+                isVisible={showFeedbackBanner}
+                targetFormat={globalConfig.targetFormat}
+                itemsCount={items.length}
+                onClose={() => setShowFeedbackBanner(false)}
+              />
+
               {/* Componente de Status Geral Consolidado */}
               <OverallStatus
                 items={items}
@@ -329,6 +340,7 @@ export default function App() {
                     onConvertSingle={handleConvertSingle}
                     onRemove={handleRemoveItem}
                     onOpenComparison={setComparisonItem}
+                    onDownload={() => setShowFeedbackBanner(true)}
                   />
                 ))}
               </div>

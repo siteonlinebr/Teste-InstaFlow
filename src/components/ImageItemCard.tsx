@@ -25,6 +25,7 @@ interface ImageItemCardProps {
   onConvertSingle: (id: string) => void;
   onRemove: (id: string) => void;
   onOpenComparison: (item: ImageFileItem) => void;
+  onDownload?: () => void;
 }
 
 export const ImageItemCard: React.FC<ImageItemCardProps> = ({
@@ -33,6 +34,7 @@ export const ImageItemCard: React.FC<ImageItemCardProps> = ({
   onConvertSingle,
   onRemove,
   onOpenComparison,
+  onDownload,
 }) => {
   const isDone = item.status === 'done' && item.convertedBlob;
   const isConverting = item.status === 'converting';
@@ -47,6 +49,7 @@ export const ImageItemCard: React.FC<ImageItemCardProps> = ({
     const baseName = item.name.substring(0, item.name.lastIndexOf('.')) || item.name;
     const ext = FORMAT_OPTIONS[item.targetFormat].extension;
     triggerFileDownload(item.convertedBlob, `${baseName}_pixelshift${ext}`);
+    onDownload?.();
   };
 
   return (
