@@ -1,6 +1,6 @@
 {
-  "name": "InstaFlow - Baixador de Vídeos do Instagram",
-  "description": "Ferramenta ultra rápida e prática para baixar Reels, vídeos, Stories e carrosséis do Instagram em alta definição (MP4) e áudio em 1 clique.",
+  "name": "PixelShift - Conversor de Imagens & PDF Grátis",
+  "description": "Converta e comprima imagens em lote direto no navegador. Suporte completo para WEBP, JPG, PNG, AVIF, ICO e PDF. 100% gratuito e privado.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -12,60 +12,177 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="content-language" content="pt-BR" />
+    <meta name="theme-color" content="#4F46E5" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="author" content="Future Horizon Group (FHG)" />
+
+    <!-- Favicons & Touch Icons -->
     <link rel="icon" type="image/x-icon" href="./assets/favicon-C7Do6iAy.ico?v=3" />
     <link rel="shortcut icon" type="image/x-icon" href="./assets/favicon-C7Do6iAy.ico?v=3" />
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-KYaT3vut.png?v=3" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij4KICA8ZGVmcz4KICAgIDwhLS0gR3JhZGllbnRlIGRlIEZ1bmRvIFByaW5jaXBhbDogw41uZGlnbyBQcm9mdW5kbyBwYXJhIENpYW5vIFZpYnJhbnRlIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZ0dyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNEY0NkU1IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjYwJSIgc3RvcC1jb2xvcj0iIzI1NjNFQiIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMDZCNkQ0IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIEdyYWRpZW50ZSBkb3MgUGl4ZWxzIGVtIFRyYW5zacOnw6NvIC8gRGVzbG9jYW1lbnRvIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwaXhlbFNoaWZ0R3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRkZGRkYiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI0E1RjNGQyIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhY2NlbnRHcmFkIiB4MT0iMCUiIHkxPSIxMDAlIiB4Mj0iMTAwJSIgeTI9IjAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM4QkRGOCIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMzREMzk5IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KCiAgICA8IS0tIFNvbWJyYSBzdWF2ZSBwYXJhIHByb2Z1bmRpZGFkZSBubyBicm93c2VyIHRhYiAtLT4KICAgIDxmaWx0ZXIgaWQ9InRpbGVTaGFkb3ciIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iMiIgc3RkRGV2aWF0aW9uPSIyLjUiIGZsb29kLWNvbG9yPSIjMEYxNzJBIiBmbG9vZC1vcGFjaXR5PSIwLjM1IiAvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgoKICA8IS0tIEJhc2UgY29tIENhbnRvcyBBcnJlZG9uZGFkb3MgRWxlZ2FudGVzIChTcXVpcmNsZSkgLS0+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9InVybCgjYmdHcmFkKSIgLz4KCiAgPCEtLSBCb3JkYSBTdXRpbCBJbnRlcm5hIGRlIFZpZHJvIC8gQWx0YSBGaWRlbGlkYWRlIC0tPgogIDxyZWN0IHg9IjEiIHk9IjEiIHdpZHRoPSI2MiIgaGVpZ2h0PSI2MiIgcng9IjE1IiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS1vcGFjaXR5PSIwLjIiIHN0cm9rZS13aWR0aD0iMS41IiAvPgoKICA8IS0tIFBpeGVsIDE6IE9yaWdlbSAoU3VwZXJpb3IgRXNxdWVyZGEpIC0tPgogIDxnIGZpbHRlcj0idXJsKCN0aWxlU2hhZG93KSI+CiAgICA8cmVjdCB4PSIxMyIgeT0iMTMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjQiIGZpbGw9InVybCgjcGl4ZWxTaGlmdEdyYWQpIiAvPgogIDwvZz4KCiAgPCEtLSBQaXhlbCAyOiBUcmFuc2Zvcm1hw6fDo28gLyBEZXN0aW5vIChJbmZlcmlvciBEaXJlaXRhIC0gRGVzbG9jYW1lbnRvICJTaGlmdCIpIC0tPgogIDxnIGZpbHRlcj0idXJsKCN0aWxlU2hhZG93KSI+CiAgICA8cmVjdCB4PSIzMyIgeT0iMzMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjQiIGZpbGw9InVybCgjYWNjZW50R3JhZCkiIC8+CiAgPC9nPgoKICA8IS0tIFBpeGVsIDM6IENvbmV4w6NvIC8gRGluw6JtaWNhIChTdXBlcmlvciBEaXJlaXRhKSAtLT4KICA8cmVjdCB4PSIzMyIgeT0iMTciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgcng9IjMiIGZpbGw9IiNGRkZGRkYiIGZpbGwtb3BhY2l0eT0iMC4zNSIgLz4KCiAgPCEtLSBQaXhlbCA0OiBQb250byBkZSBMdXogLyBCcmlsaG8gQ2VudHJhbCAoVHJhbnNmb3JtYcOnw6NvIENvbmNsdcOtZGEpIC0tPgogIDxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjMiIGZpbGw9IiNGRkZGRkYiIC8+CiAgCiAgPCEtLSBNaW5pIFNldGFzIGRlIENvbnZlcnPDo28gRGluw6JtaWNhIG5vIENlbnRybyAtLT4KICA8cGF0aCBkPSJNIDIzIDM3IEwgMjcgMzMgTCAyMyAyOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz4KICA8cGF0aCBkPSJNIDQxIDI3IEwgMzcgMzEgTCA0MSAzNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utb3BhY2l0eT0iMC42IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz4KPC9zdmc+Cg==" />
     <link rel="apple-touch-icon" href="./assets/favicon-KYaT3vut.png?v=3" />
-    <title>PixelShift - Conversor de Imagens & PDF Grátis (PNG, JPG, WEBP, AVIF, ICO, PDF)</title>
-    <meta name="description" content="Converta e comprima imagens em lote direto no navegador. Suporte completo para WEBP, JPG, PNG, AVIF, ICO (Favicon) e PDF. 100% gratuito, sem limites e privado." />
-    <meta property="og:title" content="PixelShift - Conversor de Imagens & PDF Grátis" />
-    <meta property="og:description" content="Converta e comprima imagens em lote direto no navegador. Suporte para WEBP, JPG, PNG, AVIF, ICO e PDF. 100% gratuito e privado." />
-    <meta property="og:url" content="https://conversordeimagem.site/" />
-    <meta property="og:type" content="website" />
-    <link rel="canonical" href="https://conversordeimagem.site/" />
-    <meta name="robots" content="index, follow" />
-    <meta name="keywords" content="conversor de imagens, converter foto em pdf, converter png para ico, converter imagem para avif, converter jpg para webp, converter png para jpg, criar favicon ico, comprimir fotos online, conversor de imagem gratis" />
-    <meta property="og:site_name" content="Conversor de Imagem" />
-    <meta property="og:locale" content="pt_BR" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="PixelShift - Conversor de Imagens & PDF Grátis" />
-    <meta name="twitter:description" content="Converta e comprima imagens em lote direto no navegador. Suporte para WEBP, JPG, PNG, AVIF, ICO e PDF." />
+    <link rel="manifest" href="./site.webmanifest" />
 
-    <!-- Schema.org Structured Data (JSON-LD) para indexação rica no Google -->
+    <!-- SEO Primário: Título & Meta Descrição Otimizados -->
+    <title>PixelShift – Conversor de Imagens &amp; PDF Grátis em Lote</title>
+    <meta
+      name="description"
+      content="Converta e comprima imagens em lote no navegador com privacidade 100% local. Suporte para WEBP, JPG, PNG, AVIF, ICO e PDF. Grátis, sem limites e sem cadastro."
+    />
+    <link rel="canonical" href="https://conversordeimagem.site/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://conversordeimagem.site/" />
+    <link rel="alternate" hreflang="x-default" href="https://conversordeimagem.site/" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta
+      name="keywords"
+      content="conversor de imagens, converter foto em pdf, converter png para ico, converter imagem para avif, converter jpg para webp, converter png para jpg, criar favicon ico, comprimir fotos online, conversor de imagem gratis, otimizar fotos lote"
+    />
+
+    <!-- OpenGraph Social Cards (Facebook, WhatsApp, LinkedIn, Discord, Telegram) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PixelShift · Future Horizon Group (FHG)" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:url" content="https://conversordeimagem.site/" />
+    <meta property="og:title" content="PixelShift – Conversor de Imagens &amp; PDF Grátis em Lote" />
+    <meta
+      property="og:description"
+      content="Converta e comprima imagens no navegador com privacidade 100% local. Suporte para WEBP, JPG, PNG, AVIF, ICO e PDF. Grátis, ultrarrápido e sem limites."
+    />
+    <meta property="og:image" content="https://conversordeimagem.site/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://conversordeimagem.site/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="PixelShift - Conversor de Imagens e PDF Grátis em Lote" />
+
+    <!-- Twitter / X Social Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://conversordeimagem.site/" />
+    <meta name="twitter:title" content="PixelShift – Conversor de Imagens &amp; PDF Grátis em Lote" />
+    <meta
+      name="twitter:description"
+      content="Converta e comprima imagens no navegador para WEBP, JPG, PNG, AVIF, ICO e PDF. 100% gratuito e privado."
+    />
+    <meta name="twitter:image" content="https://conversordeimagem.site/og-image.jpg" />
+    <meta name="twitter:image:alt" content="PixelShift - Conversor de Imagens e PDF Grátis em Lote" />
+
+    <!-- Schema.org Rich Structured Data Graph (JSON-LD) para Resultados Ricos no Google -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Conversor de Imagem",
-      "url": "https://conversordeimagem.site/",
-      "applicationCategory": "MultimediaApplication",
-      "operatingSystem": "All",
-      "browserRequirements": "Requires HTML5 Canvas support",
-      "author": {
-        "@type": "Organization",
-        "name": "Future Horizon Group (FHG)"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Future Horizon Group (FHG)"
-      },
-      "description": "Conversor e otimizador universal de imagens em lote. Suporte para WEBP, JPG, PNG, AVIF, ICO (Favicon), PDF, GIF e BMP com processamento local no navegador.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "BRL"
-      },
-      "featureList": [
-        "Conversão em lote de imagens",
-        "Geração de PDF a partir de fotos e documentos",
-        "Criação de favicons e ícones ICO",
-        "Conversão ultra-compacta para AVIF e WEBP",
-        "Processamento 100% local com privacidade total",
-        "Empacotamento e download em arquivo ZIP"
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://conversordeimagem.site/#webapp",
+          "name": "PixelShift",
+          "alternateName": ["Conversor de Imagens", "Conversor de Imagem Site"],
+          "url": "https://conversordeimagem.site/",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "All",
+          "browserRequirements": "Requer navegador com suporte a HTML5 Canvas e WebAssembly",
+          "description": "Conversor e otimizador universal de imagens em lote. Converta PNG, JPG, WEBP, AVIF, ICO, PDF, GIF e BMP com processamento 100% local no navegador e privacidade total.",
+          "author": {
+            "@id": "https://conversordeimagem.site/#organization"
+          },
+          "publisher": {
+            "@id": "https://conversordeimagem.site/#organization"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "BRL"
+          },
+          "featureList": [
+            "Conversão em lote ilimitada de imagens",
+            "Conversão de fotos e documentos para PDF",
+            "Geração de favicons e ícones ICO para web e Windows",
+            "Compressão inteligente de última geração para WEBP e AVIF",
+            "Processamento 100% local com privacidade garantida",
+            "Download individual ou em pacote ZIP consolidado",
+            "Controle de escala, resolução e cores de fundo"
+          ]
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://conversordeimagem.site/#organization",
+          "name": "Future Horizon Group (FHG)",
+          "url": "https://conversordeimagem.site/",
+          "logo": "https://conversordeimagem.site/og-image.jpg"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://conversordeimagem.site/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "As minhas imagens são enviadas para algum servidor?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Não! 100% da conversão acontece no seu próprio navegador através das APIs nativas de Canvas do HTML5. As imagens ficam estritamente na memória temporária do seu aparelho e nunca trafegam pela internet."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Qual é a melhor escolha entre PNG, JPG, WEBP e AVIF?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "WEBP e AVIF são os formatos modernos mais recomendados para internet: reduzem até 80% do peso do arquivo com qualidade idêntica ao JPG e suporte a transparência igual ao PNG. Use JPG se precisar de compatibilidade com programas antigos de impressão e PNG para fidelidade gráfica absoluta sem perdas."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "O que acontece com o fundo transparente de um PNG ao converter para JPG?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Como o formato JPG não suporta transparência (canal alfa), o PixelShift permite que você escolha a cor de preenchimento (por padrão, um fundo branco limpo ou preto). Assim sua imagem nunca fica com artefatos pretos indesejados."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Existe limite na quantidade de imagens ou tamanho?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Não há limite imposto pelo PixelShift! Você pode converter dezenas de imagens em lote. Como o processamento usa a memória RAM do seu próprio aparelho, arquivos de 20MB, 50MB ou mais são convertidos com total fluidez."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Preciso cadastrar cartão de crédito ou criar conta?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Absolutamente nada. O PixelShift é 100% gratuito, sem planos pagos, sem necessidade de login, sem chaves de API e sem período de testes. Você abre e usa livremente."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "@id": "https://conversordeimagem.site/#howto",
+          "name": "Como converter e comprimir imagens em lote online",
+          "description": "Passo a passo simples para converter qualquer imagem no navegador gratuitamente com o PixelShift.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Selecione ou arraste suas imagens",
+              "text": "Arraste seus arquivos para a área de envio ou clique para escolher imagens do seu computador ou celular (PNG, JPG, WEBP, GIF, BMP, etc.)."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Escolha o formato de saída",
+              "text": "Defina o formato de destino desejado (WEBP, JPG, PNG, AVIF, ICO ou PDF) e ajuste a qualidade ou escala conforme necessário."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Converta e baixe os arquivos",
+              "text": "Clique em 'Converter Todas' e baixe individualmente ou em um arquivo ZIP consolidado instantaneamente."
+            }
+          ]
+        }
       ]
     }
     </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script>
@@ -83,4 +200,3 @@
     <div id="root"></div>
   </body>
 </html>
-
