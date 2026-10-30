@@ -1,0 +1,21 @@
+{
+  "name": "PixelShift - Conversor de Imagens & PDF Grátis",
+  "short_name": "PixelShift",
+  "description": "Converta e comprima imagens em lote no navegador com privacidade 100% local. Suporte para WEBP, JPG, PNG, AVIF, ICO e PDF.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0F19",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/assets/favicon-KYaT3vut.png?v=3",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/favicon-KYaT3vut.png?v=3",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
