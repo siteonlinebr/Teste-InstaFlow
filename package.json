@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx server.ts",
     "start": "node server.ts",
-    "build": "vite build",
+    "build": "cp index.template.html index.html && vite build && cp dist/index.html index.html && cp -r dist/assets . && rm -rf docs && cp -r dist docs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js dist-server",
     "lint": "tsc --noEmit"
