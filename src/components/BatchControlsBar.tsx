@@ -183,7 +183,7 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
             {/* Botão Primário: Converter Todas */}
             <button
               type="button"

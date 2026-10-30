@@ -57,3 +57,35 @@
 .animate-slideLeft {
   animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Efeito de Cores Suave de Lado a Lado (H1 Fixo) */
+@keyframes horizontalSweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-horizontal-shimmer {
+  background: linear-gradient(
+    90deg,
+    #6366F1 0%,
+    #06B6D4 25%,
+    #E0F2FE 48%,
+    #38BDF8 62%,
+    #8B5CF6 80%,
+    #6366F1 100%
+  );
+  background-size: 250% auto;
+  animation: horizontalSweep 5s ease-in-out infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+

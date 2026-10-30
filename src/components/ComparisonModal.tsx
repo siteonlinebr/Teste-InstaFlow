@@ -35,7 +35,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({ item, onClose 
               <SplitSquareVertical className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white truncate max-w-md font-display">
+              <h3 className="text-sm font-bold text-white truncate max-w-[180px] sm:max-w-md font-display">
                 Comparação de Qualidade: {item.name}
               </h3>
               <p className="text-xs text-slate-400">

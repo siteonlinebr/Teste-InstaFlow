@@ -192,7 +192,7 @@ export default function App() {
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display text-balance">
               Converta e comprima imagens em lote{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-300 bg-clip-text text-transparent">
+              <span className="animate-horizontal-shimmer font-extrabold inline-block">
                 com velocidade máxima
               </span>
             </h1>
