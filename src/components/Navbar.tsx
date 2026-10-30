@@ -23,7 +23,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 text-white shadow-md shadow-indigo-500/20">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span className="font-display font-extrabold tracking-tight">PixelShift</span>
+          <div className="flex flex-col">
+            <span className="font-display font-extrabold tracking-tight leading-tight">PixelShift</span>
+            <span className="text-[9px] font-mono text-slate-400 tracking-wider">by Future Horizon Group</span>
+          </div>
         </a>
 
         {/* Zona 2: 4 Links de navegação sem quebra */}
