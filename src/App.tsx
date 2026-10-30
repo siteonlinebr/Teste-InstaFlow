@@ -17,6 +17,8 @@ import { DropZone } from './components/DropZone.tsx';
 import { BatchControlsBar } from './components/BatchControlsBar.tsx';
 import { ImageItemCard } from './components/ImageItemCard.tsx';
 import { ComparisonModal } from './components/ComparisonModal.tsx';
+import { PrivacyPolicyModal } from './components/PrivacyPolicyModal.tsx';
+import { OverallStatus } from './components/OverallStatus.tsx';
 import { FeaturesGrid } from './components/FeaturesGrid.tsx';
 import { FaqSection } from './components/FaqSection.tsx';
 import { Footer } from './components/Footer.tsx';
@@ -35,6 +37,7 @@ export default function App() {
   const [isConvertingAll, setIsConvertingAll] = useState(false);
   const [isLoadingSample, setIsLoadingSample] = useState(false);
   const [comparisonItem, setComparisonItem] = useState<ImageFileItem | null>(null);
+  const [privacyModalTab, setPrivacyModalTab] = useState<'privacy' | 'terms' | null>(null);
 
   const [globalConfig, setGlobalConfig] = useState<GlobalConversionConfig>({
     targetFormat: 'webp',
@@ -237,6 +240,39 @@ export default function App() {
               >
                 JPG → PNG (Fidelidade Sem Perdas)
               </button>
+              <button
+                type="button"
+                onClick={() => handleConfigChange({ targetFormat: 'pdf', quality: 0.9 })}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  globalConfig.targetFormat === 'pdf'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Foto → PDF (Documento)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfigChange({ targetFormat: 'ico' })}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  globalConfig.targetFormat === 'ico'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                PNG → ICO (Criar Favicon)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfigChange({ targetFormat: 'avif', quality: 0.85 })}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  globalConfig.targetFormat === 'avif'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Qualquer → AVIF (Ultra Leve)
+              </button>
             </div>
           </div>
         </section>
@@ -262,6 +298,13 @@ export default function App() {
                 isConverting={isConvertingAll}
                 totalCount={items.length}
                 completedCount={completedCount}
+              />
+
+              {/* Componente de Status Geral Consolidado */}
+              <OverallStatus
+                items={items}
+                isConverting={isConvertingAll}
+                onDownloadAllZip={handleDownloadAllZip}
               />
 
               {/* Lista de Imagens na Fila */}
@@ -361,8 +404,15 @@ export default function App() {
         onClose={() => setComparisonItem(null)}
       />
 
-      {/* Rodapé */}
-      <Footer />
+      {/* Rodapé com Links para Privacidade e Termos */}
+      <Footer onOpenPrivacy={(tab) => setPrivacyModalTab(tab)} />
+
+      {/* Modal Interativo de Política de Privacidade & Termos de Uso (FHG) */}
+      <PrivacyPolicyModal
+        isOpen={Boolean(privacyModalTab)}
+        initialTab={privacyModalTab || 'privacy'}
+        onClose={() => setPrivacyModalTab(null)}
+      />
     </div>
   );
 }

@@ -1,27 +1,32 @@
-# Efeito de Gradiente Fluido e Onda de Letras no Título (H1)
+# Política de Privacidade & Termos de Uso (Padrão FHG)
 
-Implementação de animação cinética e cromática no destaque principal do título ("com velocidade máxima"), combinando um gradiente fluido em degradê azul, ciano e violeta com uma sutil onda de flutuação sincronizada entre as letras.
+Implementação de um modal interativo e responsivo de **Política de Privacidade** e **Termos de Uso**, adaptando a estrutura oficial do ecossistema *Curiosidades Incríveis* para o *PixelShift* e o *Future Horizon Group (FHG)*, garantindo conformidade com a LGPD e preparando o site para aprovação no Google AdSense.
 
 ## Decisões Confirmadas pelo Usuário
 
 > [!IMPORTANT]
-> - **Estilo de Cores**: Gradiente fluido contínuo transitando suavemente entre azul elétrico, ciano neon e violeta profundo.
-> - **Movimento das Letras**: Onda suave sequencial, onde cada caractere flutua verticalmente com atraso progressivo (*stagger delay*), criando uma onda viva e moderna sem poluição visual.
+> - **Formato de Exibição**: Modal interativo de abertura instantânea na própria página, mantendo o usuário imerso sem recarregamentos ou redirecionamentos.
+> - **Padrão de Conteúdo**: Adaptação direta da política de privacidade do *Curiosidades Incríveis*, customizada com as características técnicas do *PixelShift* (processamento 100% local no navegador) e chancela do *Future Horizon Group (FHG)*.
 
 ---
 
-## 1. Visão Geral e Conceito Visual
+## 1. Visão Geral e Estrutura dos Termos
 
-O objetivo é transformar a parte final do título principal (`<h1>`) em um ponto focal de alto impacto estético, transmitindo a sensação de agilidade, tecnologia de ponta e processamento em tempo real do PixelShift.
+O modal exibirá duas abas/seções claras para os visitantes e auditores do Google AdSense:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│  Converta e comprima imagens em lote                                  │
+│  🔒 Privacidade & Termos · Future Horizon Group (FHG)              [✕] │
+├────────────────────────────────────────────────────────────────────────┤
+│  [ Aba: Política de Privacidade ]     [ Aba: Termos de Uso ]           │
 │                                                                        │
-│  c   o   m       v   e   l   o   c   i   d   a   d   e       m   á   ...│
-│  ▲   │   │       │   │   │   │   │   │   │   │   │   │       │   │   │ │
-│  │   ▼   │       ▲   │   ▼   │   ▲   │   ▼   │   ▲   │       ▼   ▲   │ │
-│  [ Onda Vertical Suave ] + [ Gradiente Fluido: Índigo ➔ Ciano ➔ Violeta ]│
+│  • Zero Venda de Dados: Privacidade inegociável                        │
+│  • Processamento 100% Local: Fotos nunca saem do dispositivo          │
+│  • Google Analytics (G-HZNZ6824F7): Métricas agregadas e anônimas      │
+│  • Cookies Técnicos: Armazenamento exclusivo de preferências locais    │
+│  • Conformidade LGPD & GDPR: Direitos de titular resguardados          │
+│  • Ecossistema FHG: Governança pelo Future Horizon Group              │
+│  • Contato Oficial: zeusagar.2018@gmail.com                            │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -29,40 +34,38 @@ O objetivo é transformar a parte final do título principal (`<h1>`) em um pont
 
 ## 2. Experiência do Usuário e Design Visual
 
-- **Paleta de Gradiente Contínuo**:
-  - Índigo Elétrico (`#6366F1`)
-  - Ciano Cristalino (`#06B6D4`)
-  - Violeta Vibrante (`#8B5CF6`)
-  - Azul Celeste (`#38BDF8`)
-- **Técnica de Renderização**:
-  - `background-size: 300% 300%` com deslocamento contínuo de posição de fundo (`background-position`) em loop infinito de 4 segundos.
-  - `-webkit-background-clip: text` e `color: transparent` para que as cores fiquem restritas à tipografia.
-- **Movimento em Onda das Letras**:
-  - Decomposição da frase `"com velocidade máxima"` em caracteres individuais envolvidos em spans `inline-block`.
-  - Animação CSS pura com aceleração via GPU (`transform: translateY(-4px)` e `will-change: transform`).
-  - Cálculo de `animationDelay` de `index * 0.07s` para que a onda viaje continuamente da esquerda para a direita.
-  - Preservação correta de espaços (`\u00A0` e `mr-1.5`) para garantir responsividade perfeita em celulares sem quebrar palavras ao meio.
+- **Estética & Atmosfera**:
+  - Backdrop em *glassmorphism* com desfoque de fundo (`backdrop-blur-md bg-black/80`).
+  - Cartão central em `#0F1422` com bordas sutis em `border-white/10` e sombra profunda `shadow-2xl`.
+  - Tipografia de alta legibilidade (`DM Sans` e `Plus Jakarta Sans`) com espaçamento confortável para leitura no mobile e desktop.
+- **Interatividade & Acessibilidade**:
+  - Fechamento intuitivo com tecla `Esc`, botão `✕` no topo ou clique fora do modal.
+  - Gatilhos de abertura integrados discretamente no rodapé (`Footer`) com links "Política de Privacidade" e "Termos de Uso".
+  - Scroll interno suave com barra de rolagem estilizada (`scrollbar-thin`).
 
 ---
 
-## 3. Decisões Técnicas e Arquitetura
+## 3. Decisões Técnicas e Conformidade
 
-- **CSS Puro vs. Biblioteca Externa**:
-  - *Abordagem Escolhida*: Animação em CSS nativo através do Tailwind CSS e `@keyframes` em `src/index.css`.
-  - *Motivo*: Desempenho máximo (60-120 FPS direto na GPU), zero impacto no peso do bundle JavaScript e compatibilidade universal em qualquer navegador móvel.
-- **Sincronização com o Deploy (GitHub Pages & Google Cloud)**:
-  - Recompilação automática de `dist/` e `docs/` para que a alteração seja publicada imediatamente tanto no link do Google quanto em `https://conversordeimagem.site/`.
+- **Componente Dedicado (`src/components/PrivacyPolicyModal.tsx`)**:
+  - Isolamento completo da lógica de exibição em componente React controlado por estado.
+- **Conformidade para Google AdSense e LGPD**:
+  - Presença explícita da menção ao rastreamento anônimo do Google Analytics (`G-HZNZ6824F7`), conformidade com a LGPD e dados do operador (*Future Horizon Group*).
+- **Zero Impacto no Desempenho**:
+  - Renderização condicional para não sobrecarregar a árvore do DOM quando o modal estiver fechado.
+- **Sincronização com o Build**:
+  - Atualização do pipeline de compilação em `dist/`, `docs/` e `index.html`.
 
 ---
 
 ## 4. Etapas de Execução
 
-1. **Configuração dos Keyframes em `src/index.css`**:
-   - Criar `@keyframes waveFloat` para a flutuação vertical (-4px a 0px).
-   - Criar `@keyframes gradientFlow` para o deslocamento contínuo do gradiente de cores.
-2. **Atualização do Componente de Título em `src/App.tsx`**:
-   - Criar subcomponente ou mapeamento de caracteres para a frase `"com velocidade máxima"`.
-   - Aplicar classes de estilo e cálculo de atraso em cascata.
-3. **Validação e Compilação**:
-   - Testar legibilidade e fluidez em telas desktop e mobile.
+1. **Criação do Componente `PrivacyPolicyModal.tsx`**:
+   - Desenvolver o modal com abas alternáveis (Privacidade / Termos de Uso).
+   - Inserir o texto padronizado com os dados específicos do PixelShift e FHG.
+2. **Integração no `App.tsx` e `Footer.tsx`**:
+   - Adicionar estado global `isPrivacyOpen` e `initialTab` no `App.tsx`.
+   - Adicionar links clicáveis no `Footer.tsx` para abrir o modal diretamente na aba solicitada.
+3. **Validação, Compilação e Sincronização**:
+   - Testar abertura, leitura e fechamento em celulares e desktops.
    - Executar `npm run build` e sincronizar pastas `dist/` e `docs/`.

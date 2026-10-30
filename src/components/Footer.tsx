@@ -1,7 +1,11 @@
 import React from 'react';
 import { Sparkles, ShieldCheck, Heart, Globe } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenPrivacy: (tab: 'privacy' | 'terms') => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy }) => {
   return (
     <footer className="w-full border-t border-white/10 bg-[#090D16] py-12 text-xs text-slate-400">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -52,15 +56,34 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Linha Inferior com Copyright e Atribuição do Grupo */}
+        {/* Linha Inferior com Copyright, Links de Termos/Privacidade e Atribuição do Grupo */}
         <div className="mt-8 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-slate-500">
-          <p>
-            © {new Date().getFullYear()} PixelShift · Uma solução desenvolvida por{' '}
-            <span className="text-slate-300 font-semibold hover:text-white transition-colors cursor-default">
-              Future Horizon Group (FHG)
-            </span>
-            .
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p>
+              © {new Date().getFullYear()} PixelShift · Solução por{' '}
+              <span className="text-slate-300 font-semibold hover:text-white transition-colors cursor-default">
+                Future Horizon Group (FHG)
+              </span>
+            </p>
+            <div className="flex items-center gap-3 text-xs">
+              <button
+                type="button"
+                onClick={() => onOpenPrivacy('privacy')}
+                className="text-slate-400 hover:text-indigo-400 underline underline-offset-4 transition-colors"
+              >
+                Política de Privacidade
+              </button>
+              <span className="text-slate-700">·</span>
+              <button
+                type="button"
+                onClick={() => onOpenPrivacy('terms')}
+                className="text-slate-400 hover:text-indigo-400 underline underline-offset-4 transition-colors"
+              >
+                Termos de Uso
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-1.5 justify-center text-xs">
             <span>Parte do ecossistema de soluções digitais</span>
             <span className="text-slate-600">·</span>

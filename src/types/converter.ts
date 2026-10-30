@@ -1,4 +1,4 @@
-export type SupportedOutputFormat = 'png' | 'jpeg' | 'webp' | 'bmp' | 'gif';
+export type SupportedOutputFormat = 'webp' | 'jpeg' | 'png' | 'avif' | 'ico' | 'pdf' | 'gif' | 'bmp';
 
 export interface ImageFileItem {
   id: string;
@@ -12,9 +12,9 @@ export interface ImageFileItem {
 
   // Configurações de conversão
   targetFormat: SupportedOutputFormat;
-  quality: number; // 0.1 a 1.0 (para jpeg e webp)
+  quality: number; // 0.1 a 1.0 (para jpeg, webp, avif, pdf)
   scalePercentage: number; // 25, 50, 75, 100
-  backgroundColor: string; // Para preenchimento de fundo em transparências (PNG -> JPG)
+  backgroundColor: string; // Para preenchimento de fundo em transparências (PNG -> JPG/BMP/PDF)
 
   // Status e Resultados
   status: 'idle' | 'converting' | 'done' | 'error';
@@ -75,6 +75,36 @@ export const FORMAT_OPTIONS: Record<SupportedOutputFormat, FormatOption> = {
     badge: 'Alta Fidelidade',
     supportsQuality: false,
     supportsTransparency: true,
+  },
+  avif: {
+    format: 'avif',
+    label: 'AVIF',
+    extension: '.avif',
+    mimeType: 'image/avif',
+    description: 'Sucessor do WEBP. Comprime até 30% a mais com máxima nitidez visual.',
+    badge: 'Ultra Compressão',
+    supportsQuality: true,
+    supportsTransparency: true,
+  },
+  ico: {
+    format: 'ico',
+    label: 'ICO (Ícone)',
+    extension: '.ico',
+    mimeType: 'image/x-icon',
+    description: 'Ícone oficial para favicons de sites, atalhos e sistemas operacionais.',
+    badge: 'Favicon & Ícone',
+    supportsQuality: false,
+    supportsTransparency: true,
+  },
+  pdf: {
+    format: 'pdf',
+    label: 'PDF (Doc)',
+    extension: '.pdf',
+    mimeType: 'application/pdf',
+    description: 'Documento universal para envio oficial, impressão, cadastros e contratos.',
+    badge: 'Documento Portável',
+    supportsQuality: true,
+    supportsTransparency: false,
   },
   gif: {
     format: 'gif',
