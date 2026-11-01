@@ -53,10 +53,10 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Se o voto foi registrado e o usuário não está digitando um comentário, inicia o contador de 2s para fechar
+  // Se o voto foi registrado e o usuário não está digitando um comentário, inicia o contador de 5s para fechar
   useEffect(() => {
     if (selectedSentiment && !isTyping && !commentText.trim()) {
-      setSecondsRemaining(2);
+      setSecondsRemaining(5);
 
       const interval = setInterval(() => {
         setSecondsRemaining((prev) => {
