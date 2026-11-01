@@ -1,6 +1,6 @@
 {
-  "summary":  "Plano de implementação para o Sistema de Micro-Feedback Inteligente (Google Analytics + E-mail Opcional) pós-download.",
-  "updatedAt":  "2026-10-30T19:53:12.232068437Z",
+  "summary":  "Plano de implementação para o Modal Centralizado de Feedback (Pop-up com Blur, 1 vez por sessão, auto-fechamento inteligente e mensagem opcional).",
+  "updatedAt":  "2026-11-01T01:05:56.356081338Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

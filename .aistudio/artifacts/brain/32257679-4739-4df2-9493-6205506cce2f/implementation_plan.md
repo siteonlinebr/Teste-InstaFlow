@@ -1,79 +1,77 @@
-# Sistema de Micro-Feedback Inteligente (Google Analytics + E-mail Opcional)
+# Modal Centralizado de Feedback Pós-Download (Pop-up com Blur & Auto-fechamento)
 
-Implementação de um componente elegante de micro-avaliação pós-download de 1 clique, integrado diretamente aos eventos em tempo real do **Google Analytics 4 (GA4)** e com canal direto para envio de sugestões ao e-mail oficial **`contatocuriosidadesincriveis6@gmail.com`**.
+Substituição da barra superior por um **modal centralizado moderno tipo aplicativo** com fundo escurecido e desfoque (*backdrop-blur*), acionado apenas 1 vez por sessão após o download, com registro imediato no Google Analytics (GA4), mensagem opcional e fechamento automático inteligente em 2 segundos.
 
 ---
 
-## 🎯 Objetivos & Decisões Confirmadas
+## 🎯 Decisões Confirmadas & Comportamento
 
 > [!IMPORTANT]
-> - **Experiência do Usuário (1 Clique)**: O card de avaliação surge suavemente logo após o usuário baixar suas imagens convertidas (individualmente ou em pacote ZIP).
-> - **Rastreamento em Tempo Real no Google Analytics (GA4)**: Cada voto dispara um evento nativo `user_feedback` com métricas detalhadas (nota, formato convertido, sentimento e contagem de itens).
-> - **Canal de E-mail para Sugestões (Opcional)**: Se o usuário quiser elogiar ou pedir uma funcionalidade (ex: conversão de vídeos, novos formatos), ele pode enviar uma mensagem em 1 clique direto para o e-mail oficial do grupo.
-> - **Sem Custo de Servidor**: Funciona 100% no navegador (Client-Side), sem banco de dados pago ou backend adicional.
+> 1. **Frequência (1x por Sessão)**:
+>    - O modal só abre **uma única vez** por visita/sessão (controlado via `sessionStorage`). Se o usuário converter e baixar 20 vezes depois, ele não será incomodado novamente.
+> 2. **Visual & Presença de App (Pop-up com Blur)**:
+>    - Centralizado na tela com bordas arredondadas elegantes (`rounded-2xl`), sombreamento profundo e fundo com desfoque de vidro fosco (`backdrop-blur-md bg-black/70`).
+>    - Pode ser fechado a qualquer momento com tecla `Esc`, botão `✕` ou clicando fora do pop-up.
+> 3. **Fluxo Rápido de 1 Clique + Auto-fechamento em 2s**:
+>    - Na tela inicial do pop-up, o visitante vê os 4 botões de sentimento e uma caixinha discreta para mensagem opcional.
+>    - Ao clicar em um dos botões:
+>      - O evento `user_feedback` é disparado imediatamente no **Google Analytics 4**.
+>      - Se o usuário não digitou texto, surge a mensagem de agradecimento com indicador visual e o pop-up **se fecha sozinho após 2 segundos**.
+> 4. **Canal de E-mail para Mensagem Opcional**:
+>    - Se o usuário preencher o campo de texto antes de votar ou durante o agradecimento, ele pode clicar em "Enviar Mensagem", abrindo o cliente de e-mail pré-configurado para `contatocuriosidadesincriveis6@gmail.com`.
 
 ---
 
-## 📐 Design & Experiência de Uso (UX)
-
-### 1. Gatilho de Exibição
-O card surge com uma animação suave (`animate-fadeIn`) logo abaixo da barra de controle ou no rodapé do item convertido assim que o download é disparado:
+## 🎨 Design do Modal (`FeedbackModal.tsx`)
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│  🎉 Download concluído! Como foi sua experiência com a conversão?      │
+│  [Ícone Sparkles]  Como foi sua conversão?                      [ ✕ ] │
+│  Seu voto nos ajuda a manter a ferramenta gratuita e veloz             │
+├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│  [ 😍 Excelente! ]   [ ⚡ Super Rápido! ]   [ 👍 Boa ]   [ 😕 Teve problema ] │
+│   [ 😍 Excelente! ]   [ ⚡ Super Rápido! ]   [ 👍 Boa ]   [ ❌ Problema ]│
+│                                                                        │
+│   Sua sugestão ou comentário (Opcional):                               │
+│   ┌──────────────────────────────────────────────────────────────────┐ │
+│   │ Ex: Gostaria de converter vídeos, mais opções de corte...         │ │
+│   └──────────────────────────────────────────────────────────────────┘ │
+│                                                                        │
+│   [✓ Voto registrado! Fechando em 2s...]            [Enviar Mensagem]  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
-
-### 2. Estado Após o 1º Clique (Registro Imediato no Google Analytics)
-Assim que o visitante clica em qualquer uma das opções:
-1. O evento é enviado instantaneamente para o **Google Analytics 4**:
-   - `event_name`: `user_feedback`
-   - `sentiment`: `'excelente'` | `'rapido'` | `'boa'` | `'problema'`
-   - `format`: formato utilizado (ex: `'webp'`, `'pdf'`, etc.)
-   - `timestamp`: data e hora do evento.
-2. A tela muda para agradecimento com espaço opcional para mensagem:
-   ```
-   ┌────────────────────────────────────────────────────────────────────┐
-   │  ✓ Muito obrigado pelo feedback! Cada voto ajuda o ecossistema FHG. │
-   │                                                                    │
-   │  Quer deixar uma sugestão para os próximos recursos? (Opcional)    │
-   │  [ Escreva uma mensagem rápida...                                ] │
-   │  [ Enviar Mensagem por E-mail ✉️ ]              [ Concluir ✕ ]     │
-   └────────────────────────────────────────────────────────────────────┘
-   ```
 
 ---
 
 ## 🛠️ Arquitetura Técnica
 
-### 1. Novo Componente React: `src/components/FeedbackBanner.tsx`
-- Estado local controlado (`rating`, `submitted`, `isExpanded`).
-- Prevenção de spam: armazena no `localStorage` para não ficar incomodando o mesmo usuário a cada download consecutivo.
-- Botão de fechar `✕` discreto a qualquer momento.
+### 1. Novo Componente: `src/components/FeedbackModal.tsx`
+- Substitui o antigo banner horizontal.
+- Controla o estado de abertura, temporizador de 2 segundos com cancelamento ao digitar e desfoque de fundo.
+- Bloqueia rolagem do fundo quando ativo (`overflow-hidden` no body) e responde ao `Escape`.
 
-### 2. Integração com o Google Analytics 4 (GA4)
-- Função utilitária no serviço: `trackFeedbackEvent(sentiment, format, count)`.
-- Compatibilidade segura com `window.gtag` (testando existência antes da chamada).
+### 2. Integração no `src/App.tsx`
+- Verificação de sessão:
+  ```ts
+  const hasSeenFeedback = sessionStorage.getItem('pixelshift_feedback_session');
+  if (!hasSeenFeedback) {
+    setShowFeedbackModal(true);
+    sessionStorage.setItem('pixelshift_feedback_session', 'true');
+  }
+  ```
+- Disparado em:
+  - `handleDownloadAllZip` (download do lote completo).
+  - `onDownload` de qualquer imagem individual em `ImageItemCard`.
 
-### 3. Integração de E-mail
-- Abertura de mensagem ou envio para `contatocuriosidadesincriveis6@gmail.com` com título pré-configurado: `[PixelShift Feedback] Sugestão / Avaliação de Usuário`.
-
-### 4. Conexão nos Gatilhos de Download
-- Acionado no clique de:
-  - Botão individual "Baixar Imagem".
-  - Botão global "Baixar Todas (.ZIP)".
+### 3. Métricas no Google Analytics (GA4)
+- Parâmetros registrados em cada clique:
+  - `sentiment_value`: `'excelente'`, `'rapido'`, `'boa'`, `'problema'`.
+  - `format_used`: formato de saída (`webp`, `jpg`, `pdf`, etc.).
+  - `has_custom_message`: `true` ou `false`.
 
 ---
 
-## 🚀 Etapas de Implementação
-
-1. **Criar `src/components/FeedbackBanner.tsx`**:
-   - Interface moderna com glassmorphism, botões interativos e feedback tátil.
-2. **Conectar Gatilhos no `App.tsx` e `imageConverter.ts`**:
-   - Disparar a exibição do banner quando o download for efetuado com sucesso.
-3. **Verificação & Compilação**:
-   - Testar o envio de eventos no GA4.
-   - Executar `npm run build` e sincronizar `dist/` e `docs/` para o GitHub Pages.
+## 📋 Próximos Passos
+1. Criar o componente `src/components/FeedbackModal.tsx`.
+2. Remover o antigo banner em linha e acoplar o modal no `src/App.tsx`.
+3. Executar compilação de produção (`npm run build`) e sincronizar na raiz e em `/docs`.
