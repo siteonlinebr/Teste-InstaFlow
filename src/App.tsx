@@ -411,8 +411,15 @@ export default function App() {
 
         {/* Área Central de Conversão */}
         <section ref={converterSectionRef} className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          {/* Barra de Modos e Configurações da Ferramenta (Visível Imediatamente) */}
-          <div className="mb-6">
+          {/* 1º PASSO: Caixa de Arraste / Upload em 1º Lugar */}
+          <DropZone
+            onFilesSelected={handleFilesSelected}
+            isLoadingSample={isLoadingSample}
+            setIsLoadingSample={setIsLoadingSample}
+          />
+
+          {/* 2º PASSO: Barra de Modos e Configurações da Ferramenta */}
+          <div className="mt-8 space-y-6">
             <BatchControlsBar
               config={globalConfig}
               onChangeConfig={handleConfigChange}
@@ -422,53 +429,45 @@ export default function App() {
               totalCount={items.length}
               completedCount={completedCount}
             />
-          </div>
 
-          {/* Caixa de Arraste / DropZone */}
-          <DropZone
-            onFilesSelected={handleFilesSelected}
-            isLoadingSample={isLoadingSample}
-            setIsLoadingSample={setIsLoadingSample}
-          />
+            {/* 3º PASSO: Exibe Status e Lista de Arquivos quando houver imagens */}
+            {items.length > 0 && (
+              <>
+                <OverallStatus
+                  items={items}
+                  isConverting={isConvertingAll}
+                  onDownloadAllZip={handleDownloadAllZip}
+                />
 
-          {/* Quando houver imagens carregadas: Status Geral Consolidado + Lista de Itens */}
-          {items.length > 0 && (
-            <div className="mt-8 space-y-6">
-              {/* Componente de Status Geral Consolidado */}
-              <OverallStatus
-                items={items}
-                isConverting={isConvertingAll}
-                onDownloadAllZip={handleDownloadAllZip}
-              />
+                {/* Lista de Imagens na Fila */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between px-1">
+                    <h3 className="text-sm font-bold text-white font-display flex items-center gap-2">
+                      <Layers className="h-4 w-4 text-indigo-400" />
+                      <span>Fila de Imagens ({items.length})</span>
+                    </h3>
 
-              {/* Lista de Imagens na Fila */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <h3 className="text-sm font-bold text-white font-display flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-indigo-400" />
-                    <span>Fila de Imagens ({items.length})</span>
-                  </h3>
+                    <span className="text-xs text-slate-400 font-mono tabular-nums">
+                      Tamanho original total:{' '}
+                      {formatFileSize(items.reduce((acc, i) => acc + i.originalSize, 0))}
+                    </span>
+                  </div>
 
-                  <span className="text-xs text-slate-400 font-mono tabular-nums">
-                    Tamanho original total:{' '}
-                    {formatFileSize(items.reduce((acc, i) => acc + i.originalSize, 0))}
-                  </span>
+                  {items.map((item) => (
+                    <ImageItemCard
+                      key={item.id}
+                      item={item}
+                      onUpdateItem={handleUpdateItem}
+                      onConvertSingle={handleConvertSingle}
+                      onRemove={handleRemoveItem}
+                      onOpenComparison={setComparisonItem}
+                      onDownload={triggerFeedbackModal}
+                    />
+                  ))}
                 </div>
-
-                {items.map((item) => (
-                  <ImageItemCard
-                    key={item.id}
-                    item={item}
-                    onUpdateItem={handleUpdateItem}
-                    onConvertSingle={handleConvertSingle}
-                    onRemove={handleRemoveItem}
-                    onOpenComparison={setComparisonItem}
-                    onDownload={triggerFeedbackModal}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </section>
 
         {/* Tabela Comparativa de Formatos (#formatos) */}

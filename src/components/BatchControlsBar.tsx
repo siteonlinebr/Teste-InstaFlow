@@ -50,22 +50,25 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
   ];
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-[#111625] p-5 sm:p-6 shadow-xl">
-      <div className="flex flex-col gap-6">
+    <div className="w-full rounded-2xl border border-white/10 bg-[#111625] p-3.5 sm:p-6 shadow-xl overflow-hidden">
+      <div className="flex flex-col gap-5 sm:gap-6">
         {/* Abas Superiores de Modo: Conversão vs Compressão vs Redimensionamento */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/5">
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#090D16] border border-white/5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/5">
+          <div className="grid grid-cols-3 gap-1 w-full sm:w-auto p-1 rounded-xl bg-[#090D16] border border-white/5">
             <button
               type="button"
               onClick={() => onChangeConfig({ activeMode: 'convert' })}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 sm:px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-center ${
                 config.activeMode === 'convert'
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Sliders className="h-3.5 w-3.5" />
-              <span>Converter Formato</span>
+              <Sliders className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
+                <span className="inline sm:hidden">Converter</span>
+                <span className="hidden sm:inline">Converter Formato</span>
+              </span>
             </button>
 
             <button
@@ -77,14 +80,17 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
                   targetFormat: 'webp',
                 })
               }
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 sm:px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-center ${
                 config.activeMode === 'compress'
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Minimize2 className="h-3.5 w-3.5" />
-              <span>Comprimir Imagem (KB)</span>
+              <Minimize2 className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
+                <span className="inline sm:hidden">Comprimir</span>
+                <span className="hidden sm:inline">Comprimir (KB)</span>
+              </span>
             </button>
 
             <button
@@ -97,18 +103,21 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
                   customHeight: config.customHeight || 1080,
                 })
               }
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              className={`flex items-center justify-center gap-1.5 px-2 sm:px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-center ${
                 config.activeMode === 'resize'
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Maximize2 className="h-3.5 w-3.5" />
-              <span>Redimensionar em Pixels</span>
+              <Maximize2 className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">
+                <span className="inline sm:hidden">Redimensionar</span>
+                <span className="hidden sm:inline">Redimensionar px</span>
+              </span>
             </button>
           </div>
 
-          <div className="text-xs text-slate-400 hidden sm:block">
+          <div className="text-xs text-slate-400 hidden lg:block">
             {config.activeMode === 'convert' && 'Mude entre WEBP, JPG, PNG, AVIF, ICO e PDF'}
             {config.activeMode === 'compress' && 'Otimize peso em KB sem perdas visíveis'}
             {config.activeMode === 'resize' && 'Defina largura e altura exatas em pixels'}
@@ -242,7 +251,7 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
               </div>
 
               {/* Presets Rápidos */}
-              <div className="flex flex-wrap items-center gap-1.5 ml-auto pt-2 sm:pt-0">
+              <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto sm:ml-auto pt-2 sm:pt-0">
                 <span className="text-[11px] text-slate-400 mr-1">Presets:</span>
                 {DIMENSION_PRESETS.map((p) => (
                   <button
