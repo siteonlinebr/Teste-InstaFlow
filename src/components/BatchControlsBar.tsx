@@ -121,7 +121,9 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-indigo-400" />
               <span className="text-sm font-bold text-white font-display">
-                Formato de saída para {totalCount} arquivo{totalCount > 1 ? 's' : ''}:
+                {totalCount > 0
+                  ? `Formato de saída para ${totalCount} arquivo${totalCount > 1 ? 's' : ''}:`
+                  : 'Formato de saída desejado:'}
               </span>
             </div>
             <p className="text-xs text-slate-400">
@@ -418,7 +420,7 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
             {/* Botão Primário: Processar Todas */}
             <button
               type="button"
-              disabled={isConverting}
+              disabled={isConverting || totalCount === 0}
               onClick={onConvertAll}
               className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 whitespace-nowrap"
             >
@@ -426,6 +428,11 @@ export const BatchControlsBar: React.FC<BatchControlsBarProps> = ({
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
                   <span>Processando...</span>
+                </>
+              ) : totalCount === 0 ? (
+                <>
+                  <Layers className="h-4 w-4 text-indigo-300" />
+                  <span>Arraste imagens abaixo para processar</span>
                 </>
               ) : (
                 <>

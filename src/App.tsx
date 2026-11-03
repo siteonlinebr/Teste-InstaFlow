@@ -411,6 +411,19 @@ export default function App() {
 
         {/* Área Central de Conversão */}
         <section ref={converterSectionRef} className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          {/* Barra de Modos e Configurações da Ferramenta (Visível Imediatamente) */}
+          <div className="mb-6">
+            <BatchControlsBar
+              config={globalConfig}
+              onChangeConfig={handleConfigChange}
+              onConvertAll={handleConvertAll}
+              onDownloadAllZip={handleDownloadAllZip}
+              isConverting={isConvertingAll}
+              totalCount={items.length}
+              completedCount={completedCount}
+            />
+          </div>
+
           {/* Caixa de Arraste / DropZone */}
           <DropZone
             onFilesSelected={handleFilesSelected}
@@ -418,20 +431,9 @@ export default function App() {
             setIsLoadingSample={setIsLoadingSample}
           />
 
-          {/* Quando houver imagens carregadas: Barra de Controle Global + Lista de Itens */}
+          {/* Quando houver imagens carregadas: Status Geral Consolidado + Lista de Itens */}
           {items.length > 0 && (
             <div className="mt-8 space-y-6">
-              {/* Barra de Configurações em Lote */}
-              <BatchControlsBar
-                config={globalConfig}
-                onChangeConfig={handleConfigChange}
-                onConvertAll={handleConvertAll}
-                onDownloadAllZip={handleDownloadAllZip}
-                isConverting={isConvertingAll}
-                totalCount={items.length}
-                completedCount={completedCount}
-              />
-
               {/* Componente de Status Geral Consolidado */}
               <OverallStatus
                 items={items}

@@ -5,10 +5,8 @@ import {
   ShieldCheck,
   ChevronDown,
   Layers,
-  Minimize2,
-  Maximize2,
-  FileText,
-  Image as ImageIcon,
+  Menu,
+  X,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -27,6 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentPath = '/',
 }) => {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const tools = [
     { path: '/converter-png-para-jpg', label: 'Converter PNG para JPG', badge: 'Popular' },
@@ -42,6 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleNavClick = (path: string, e: React.MouseEvent) => {
     e.preventDefault();
     setIsToolsOpen(false);
+    setIsMobileMenuOpen(false);
     if (onSelectRoute) {
       onSelectRoute(path);
     } else {
@@ -51,8 +51,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0B0F19]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0B0F19]/95 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Marca Oficial PixelShift */}
         <a
           href="/"
@@ -68,9 +68,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </a>
 
-        {/* Links de navegação e Menu de Ferramentas Dedicadas */}
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-300">
-          {/* Dropdown de Ferramentas Específicas */}
+        {/* Menu Desktop: Ferramentas + Formatos + Privacidade */}
+        <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-300">
+          {/* Botão de Ferramentas Específicas */}
           <div className="relative">
             <button
               type="button"
@@ -78,7 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:text-white hover:bg-indigo-500/20 transition-all font-semibold"
             >
               <Layers className="h-4 w-4" />
-              <span>Ferramentas de Conversão</span>
+              <span>Ferramentas (8)</span>
               <ChevronDown
                 className={`h-3.5 w-3.5 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`}
               />
@@ -89,8 +89,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="absolute top-full left-0 mt-2 w-72 rounded-2xl border border-white/10 bg-[#0F1422] p-2 shadow-2xl backdrop-blur-xl animate-fadeIn z-50"
                 onMouseLeave={() => setIsToolsOpen(false)}
               >
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 py-1.5">
-                  Páginas Especializadas
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 py-1.5 font-mono">
+                  Páginas de Alta Conversão
                 </div>
                 {tools.map((t) => (
                   <a
@@ -130,17 +130,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="#faq"
             className="hover:text-white transition-colors whitespace-nowrap"
           >
-            Dúvidas Frequentes
+            Dúvidas
           </a>
         </nav>
 
-        {/* Ação Primária ou Limpar Fila */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zona Direita: Limpar Fila + Botão Mobile */}
+        <div className="flex items-center gap-2.5 shrink-0">
           {totalItems > 0 ? (
             <button
               type="button"
               onClick={onClearAll}
-              className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3.5 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/20 transition-all active:scale-95 whitespace-nowrap shrink-0"
+              className="flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20 transition-all active:scale-95 whitespace-nowrap"
               title="Remover todas as imagens da fila"
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -150,13 +150,49 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onScrollToConverter}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all active:scale-95 whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-indigo-500 transition-all active:scale-95 whitespace-nowrap"
             >
-              Usar Ferramenta
+              Converter Agora
             </button>
           )}
+
+          {/* Botão de Menu para Celulares (Mobile Drawer) */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden flex items-center justify-center p-2 rounded-lg border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+            title="Abrir Menu de Ferramentas"
+          >
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Menu Aberto no Celular (Mobile Drawer) */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-white/10 bg-[#0F1422] p-4 space-y-3 animate-fadeIn">
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+            Todas as Ferramentas Especializadas:
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {tools.map((t) => (
+              <a
+                key={t.path}
+                href={t.path}
+                onClick={(e) => handleNavClick(t.path, e)}
+                className={`flex items-center justify-between p-2.5 rounded-xl border text-xs font-semibold transition-all ${
+                  currentPath === t.path
+                    ? 'border-indigo-500 bg-indigo-600 text-white'
+                    : 'border-white/5 bg-[#090D16] text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span>{t.label}</span>
+                <span className="text-[10px] text-slate-400 font-mono">{t.badge}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
