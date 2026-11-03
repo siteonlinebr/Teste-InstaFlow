@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   GlobalConversionConfig,
   ImageFileItem,
@@ -12,6 +12,7 @@ import {
   triggerFileDownload,
   formatFileSize,
 } from './services/imageConverter.ts';
+import { LANDING_PAGES, LandingPageConfig } from './data/landingPages.ts';
 import { Navbar } from './components/Navbar.tsx';
 import { DropZone } from './components/DropZone.tsx';
 import { BatchControlsBar } from './components/BatchControlsBar.tsx';
@@ -31,6 +32,10 @@ import {
   CheckCircle2,
   Layers,
   Check,
+  Minimize2,
+  Maximize2,
+  FileText,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 export default function App() {
@@ -40,6 +45,30 @@ export default function App() {
   const [comparisonItem, setComparisonItem] = useState<ImageFileItem | null>(null);
   const [privacyModalTab, setPrivacyModalTab] = useState<'privacy' | 'terms' | null>(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
+  // Normaliza o pathname do navegador para bater com as rotas
+  const normalizePath = (p: string) => {
+    const clean = p.replace(/\/$/, '') || '/';
+    return clean;
+  };
+
+  const [currentPath, setCurrentPath] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return normalizePath(window.location.pathname);
+    }
+    return '/';
+  });
+
+  // Escuta botões voltar/avançar do navegador
+  useEffect(() => {
+    const onPop = () => {
+      setCurrentPath(normalizePath(window.location.pathname));
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const activePage: LandingPageConfig = LANDING_PAGES[currentPath] || LANDING_PAGES['/'];
 
   // Exibe o modal centralizado de feedback apenas 1 única vez por sessão do usuário
   const triggerFeedbackModal = () => {
@@ -55,13 +84,48 @@ export default function App() {
   };
 
   const [globalConfig, setGlobalConfig] = useState<GlobalConversionConfig>({
-    targetFormat: 'webp',
-    quality: 0.85,
+    targetFormat: activePage.targetFormat,
+    quality: activePage.defaultQuality,
     scalePercentage: 100,
     backgroundColor: '#FFFFFF',
+    resizeMode: activePage.defaultWidth ? 'custom' : 'percentage',
+    customWidth: activePage.defaultWidth || null,
+    customHeight: activePage.defaultHeight || null,
+    maintainAspectRatio: true,
+    activeMode: activePage.activeMode,
   });
 
+  // Atualiza título da aba e configurações globais quando a rota muda
+  useEffect(() => {
+    const page = LANDING_PAGES[currentPath] || LANDING_PAGES['/'];
+    setGlobalConfig((prev) => ({
+      ...prev,
+      targetFormat: page.targetFormat,
+      quality: page.defaultQuality,
+      activeMode: page.activeMode,
+      resizeMode: page.defaultWidth ? 'custom' : prev.resizeMode,
+      customWidth: page.defaultWidth !== undefined ? page.defaultWidth : prev.customWidth,
+      customHeight: page.defaultHeight !== undefined ? page.defaultHeight : prev.customHeight,
+    }));
+
+    if (typeof document !== 'undefined') {
+      document.title = page.metaTitle;
+      const descEl = document.querySelector('meta[name="description"]');
+      if (descEl) descEl.setAttribute('content', page.metaDescription);
+    }
+  }, [currentPath]);
+
   const converterSectionRef = useRef<HTMLDivElement>(null);
+
+  // Navega suavemente entre as ferramentas e atualiza a URL
+  const handleNavigateRoute = (newPath: string) => {
+    const clean = normalizePath(newPath);
+    if (clean !== currentPath) {
+      window.history.pushState({}, '', clean);
+      setCurrentPath(clean);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Adiciona arquivos à fila
   const handleFilesSelected = async (files: File[]) => {
@@ -73,6 +137,10 @@ export default function App() {
       item.quality = globalConfig.quality;
       item.scalePercentage = globalConfig.scalePercentage;
       item.backgroundColor = globalConfig.backgroundColor;
+      item.resizeMode = globalConfig.resizeMode;
+      item.customWidth = globalConfig.customWidth;
+      item.customHeight = globalConfig.customHeight;
+      item.maintainAspectRatio = globalConfig.maintainAspectRatio;
       newItems.push(item);
     }
 
@@ -109,13 +177,13 @@ export default function App() {
     }
   };
 
-  // Converte todas as imagens da fila
+  // Converte todas as imagens pendentes em lote
   const handleConvertAll = async () => {
-    if (items.length === 0 || isConvertingAll) return;
-
     setIsConvertingAll(true);
 
     for (const item of items) {
+      if (item.status === 'done') continue;
+
       handleUpdateItem(item.id, { status: 'converting', error: undefined });
       try {
         const result = await convertSingleImage(item);
@@ -145,6 +213,10 @@ export default function App() {
             ...(newConfig.quality !== undefined ? { quality: newConfig.quality } : {}),
             ...(newConfig.scalePercentage !== undefined ? { scalePercentage: newConfig.scalePercentage } : {}),
             ...(newConfig.backgroundColor ? { backgroundColor: newConfig.backgroundColor } : {}),
+            ...(newConfig.resizeMode ? { resizeMode: newConfig.resizeMode } : {}),
+            ...(newConfig.customWidth !== undefined ? { customWidth: newConfig.customWidth } : {}),
+            ...(newConfig.customHeight !== undefined ? { customHeight: newConfig.customHeight } : {}),
+            ...(newConfig.maintainAspectRatio !== undefined ? { maintainAspectRatio: newConfig.maintainAspectRatio } : {}),
           };
         }
         return item;
@@ -194,10 +266,12 @@ export default function App() {
         onScrollToConverter={() =>
           converterSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
         }
+        onSelectRoute={handleNavigateRoute}
+        currentPath={currentPath}
       />
 
       <main className="flex-1">
-        {/* Seção Hero: Apresentação com Alta Clareza e Sem Slop */}
+        {/* Seção Hero Dinâmica Conforme a Ferramenta Ativa */}
         <section className="relative overflow-hidden pt-12 pb-8 sm:pt-16 sm:pb-12 border-b border-white/5">
           {/* Efeito sutil de iluminação de fundo */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[360px] bg-gradient-to-b from-indigo-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none" />
@@ -206,88 +280,130 @@ export default function App() {
             {/* Tag de Destaque Unboxed sem pílula estática */}
             <div className="flex items-center justify-center gap-2 text-xs font-semibold text-emerald-400 mb-4">
               <ShieldCheck className="h-4 w-4" />
-              <span>Processamento 100% no seu navegador · Suas fotos nunca saem do seu dispositivo</span>
+              <span>{activePage.badge}</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white font-display text-balance">
-              Converta e comprima imagens em lote{' '}
+              {activePage.heroTitle}{' '}
               <span className="animate-horizontal-shimmer font-extrabold inline-block">
-                com velocidade máxima
+                {activePage.heroHighlight}
               </span>
             </h1>
 
             <p className="mt-4 sm:mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto text-balance leading-relaxed">
-              Transforme PNG, JPG, WEBP, GIF, BMP e SVG com fidelidade milimétrica. Reduza até 80% do peso para web sem perda visual perceptível.
+              {activePage.heroSubtitle}
             </p>
 
-            {/* Atalhos Rápidos de Conversão em 1 Clique */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-xs text-slate-400 mr-1">Atalhos rápidos:</span>
+            {/* Atalhos Rápidos para Todas as Ferramentas Especializadas */}
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-xs text-slate-400 mr-1">Ferramentas:</span>
+
               <button
                 type="button"
-                onClick={() => handleConfigChange({ targetFormat: 'webp', quality: 0.85 })}
+                onClick={() => handleNavigateRoute('/')}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  globalConfig.targetFormat === 'webp'
+                  currentPath === '/'
                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                Qualquer → WEBP (Economia Máxima)
+                Universal
               </button>
+
               <button
                 type="button"
-                onClick={() => handleConfigChange({ targetFormat: 'jpeg', quality: 0.9 })}
+                onClick={() => handleNavigateRoute('/converter-png-para-jpg')}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  globalConfig.targetFormat === 'jpeg'
+                  currentPath === '/converter-png-para-jpg'
                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                PNG → JPG (Compatibilidade)
+                PNG → JPG
               </button>
+
               <button
                 type="button"
-                onClick={() => handleConfigChange({ targetFormat: 'png' })}
+                onClick={() => handleNavigateRoute('/converter-jpg-para-png')}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  globalConfig.targetFormat === 'png'
+                  currentPath === '/converter-jpg-para-png'
                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                JPG → PNG (Fidelidade Sem Perdas)
+                JPG → PNG
               </button>
+
               <button
                 type="button"
-                onClick={() => handleConfigChange({ targetFormat: 'pdf', quality: 0.9 })}
+                onClick={() => handleNavigateRoute('/converter-para-webp')}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  globalConfig.targetFormat === 'pdf'
+                  currentPath === '/converter-para-webp'
                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                Foto → PDF (Documento)
+                Para WEBP
               </button>
+
               <button
                 type="button"
-                onClick={() => handleConfigChange({ targetFormat: 'ico' })}
+                onClick={() => handleNavigateRoute('/converter-foto-para-pdf')}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  globalConfig.targetFormat === 'ico'
+                  currentPath === '/converter-foto-para-pdf'
                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                PNG → ICO (Criar Favicon)
+                Foto → PDF
               </button>
+
               <button
                 type="button"
-                onClick={() => handleConfigChange({ targetFormat: 'avif', quality: 0.85 })}
+                onClick={() => handleNavigateRoute('/criar-favicon-ico')}
                 className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  globalConfig.targetFormat === 'avif'
+                  currentPath === '/criar-favicon-ico'
                     ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
                     : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                Qualquer → AVIF (Ultra Leve)
+                Criar Favicon
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleNavigateRoute('/converter-para-avif')}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  currentPath === '/converter-para-avif'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Para AVIF
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleNavigateRoute('/comprimir-imagem')}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  currentPath === '/comprimir-imagem'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Comprimir KB
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleNavigateRoute('/redimensionar-imagem')}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                  currentPath === '/redimensionar-imagem'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Redimensionar px
               </button>
             </div>
           </div>
@@ -411,8 +527,8 @@ export default function App() {
         {/* Pilares de Benefícios */}
         <FeaturesGrid />
 
-        {/* Seção de Perguntas Frequentes */}
-        <FaqSection />
+        {/* Seção de Perguntas Frequentes com FAQ dinâmico da rota */}
+        <FaqSection customFaqs={activePage.faqs} />
       </main>
 
       {/* Modal Interativo de Comparação Antes/Depois */}

@@ -16,6 +16,12 @@ export interface ImageFileItem {
   scalePercentage: number; // 25, 50, 75, 100
   backgroundColor: string; // Para preenchimento de fundo em transparências (PNG -> JPG/BMP/PDF)
 
+  // Redimensionamento personalizado em Pixels
+  resizeMode?: 'percentage' | 'custom';
+  customWidth?: number | null;
+  customHeight?: number | null;
+  maintainAspectRatio?: boolean;
+
   // Status e Resultados
   status: 'idle' | 'converting' | 'done' | 'error';
   progress: number;
@@ -27,11 +33,18 @@ export interface ImageFileItem {
   error?: string;
 }
 
+export type ActiveToolMode = 'convert' | 'compress' | 'resize';
+
 export interface GlobalConversionConfig {
   targetFormat: SupportedOutputFormat;
   quality: number;
   scalePercentage: number;
   backgroundColor: string;
+  resizeMode: 'percentage' | 'custom';
+  customWidth: number | null;
+  customHeight: number | null;
+  maintainAspectRatio: boolean;
+  activeMode: ActiveToolMode;
 }
 
 export interface FormatOption {

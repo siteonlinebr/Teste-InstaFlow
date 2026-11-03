@@ -56,6 +56,39 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy }) => {
           </div>
         </div>
 
+        {/* Diretório de Ferramentas Especializadas (SEO Internal Linking) */}
+        <div className="mt-8 pt-8 border-t border-white/5">
+          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 font-mono">
+            Ferramentas Especializadas de Imagem &amp; Documentos:
+          </p>
+          <div className="flex flex-wrap gap-x-5 gap-y-2.5 text-xs">
+            <a href="/converter-png-para-jpg" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Converter PNG para JPG
+            </a>
+            <a href="/converter-jpg-para-png" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Converter JPG para PNG
+            </a>
+            <a href="/converter-para-webp" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Converter para WEBP (Google)
+            </a>
+            <a href="/converter-foto-para-pdf" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Converter Foto para PDF
+            </a>
+            <a href="/criar-favicon-ico" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Criar Favicon ICO (32-bits)
+            </a>
+            <a href="/converter-para-avif" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Converter para AVIF (Ultra Leve)
+            </a>
+            <a href="/comprimir-imagem" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Comprimir Imagens (Reduzir KB)
+            </a>
+            <a href="/redimensionar-imagem" className="text-slate-400 hover:text-indigo-300 transition-colors">
+              Redimensionar em Pixels (Instagram/YT)
+            </a>
+          </div>
+        </div>
+
         {/* Linha Inferior com Copyright, Links de Termos/Privacidade e Atribuição do Grupo */}
         <div className="mt-8 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-slate-500">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">

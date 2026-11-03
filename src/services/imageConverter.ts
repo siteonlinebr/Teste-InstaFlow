@@ -55,6 +55,10 @@ export async function processInputFile(file: File): Promise<ImageFileItem> {
     quality: 0.85,
     scalePercentage: 100,
     backgroundColor: '#FFFFFF',
+    resizeMode: 'percentage',
+    customWidth: null,
+    customHeight: null,
+    maintainAspectRatio: true,
     status: 'idle',
     progress: 0,
   };
@@ -86,9 +90,26 @@ export async function convertSingleImage(item: ImageFileItem): Promise<Partial<I
 
     img.onload = () => {
       try {
-        const scale = item.scalePercentage / 100;
-        const targetWidth = Math.max(1, Math.round(img.naturalWidth * scale));
-        const targetHeight = Math.max(1, Math.round(img.naturalHeight * scale));
+        let targetWidth = img.naturalWidth;
+        let targetHeight = img.naturalHeight;
+
+        if (item.resizeMode === 'custom' && item.customWidth && item.customHeight) {
+          if (item.maintainAspectRatio) {
+            const ratio = Math.min(
+              item.customWidth / img.naturalWidth,
+              item.customHeight / img.naturalHeight
+            );
+            targetWidth = Math.max(1, Math.round(img.naturalWidth * ratio));
+            targetHeight = Math.max(1, Math.round(img.naturalHeight * ratio));
+          } else {
+            targetWidth = Math.max(1, Math.round(item.customWidth));
+            targetHeight = Math.max(1, Math.round(item.customHeight));
+          }
+        } else {
+          const scale = (item.scalePercentage || 100) / 100;
+          targetWidth = Math.max(1, Math.round(img.naturalWidth * scale));
+          targetHeight = Math.max(1, Math.round(img.naturalHeight * scale));
+        }
 
         const canvas = document.createElement('canvas');
         canvas.width = targetWidth;

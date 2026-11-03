@@ -7,10 +7,14 @@ interface FaqItem {
   category?: string;
 }
 
-export const FaqSection: React.FC = () => {
+interface FaqSectionProps {
+  customFaqs?: Array<{ question: string; answer: string; category?: string }>;
+}
+
+export const FaqSection: React.FC<FaqSectionProps> = ({ customFaqs }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const faqs: FaqItem[] = [
+  const defaultFaqs: FaqItem[] = [
     {
       question: 'O que é um conversor de imagem e como ele funciona?',
       answer:
@@ -60,6 +64,14 @@ export const FaqSection: React.FC = () => {
       category: 'Geral',
     },
   ];
+
+  const faqs: FaqItem[] =
+    customFaqs && customFaqs.length > 0
+      ? [
+          ...customFaqs,
+          ...defaultFaqs.filter((df) => !customFaqs.some((cf) => cf.question === df.question)),
+        ]
+      : defaultFaqs;
 
   return (
     <section id="faq" className="w-full py-16 border-t border-white/5 bg-[#0B0F19]/50">
